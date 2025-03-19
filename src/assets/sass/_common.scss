@@ -18,7 +18,7 @@ button.btn-medium {
 }
 
 button a,
-button {
+button:not(.mat-mdc-menu-item) {
   color: $light-text !important;
 }
 
