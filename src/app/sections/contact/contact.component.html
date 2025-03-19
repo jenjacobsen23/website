@@ -1,0 +1,39 @@
+<div class="container">
+  <h1 class="section-heading text-center">CONTACT</h1>
+  <p class="text-center">
+    Submit the form below and I will get back to you as soon as possible.
+    <br />I look forward to working with you.
+  </p>
+</div>
+
+<div class="contact-form-container">
+  <form [formGroup]="contactForm" class="d-flex row">
+    <mat-form-field>
+      <mat-label>Name: </mat-label>
+      <input matInput placeholder="Enter your name" formControlName="name" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Email: </mat-label>
+      <input matInput placeholder="Enter your email" formControlName="email" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Project Title: </mat-label>
+      <input
+        matInput
+        placeholder="Enter your projects title"
+        formControlName="title"
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Message: </mat-label>
+      <input
+        matInput
+        placeholder="Enter your message"
+        formControlName="message"
+      />
+    </mat-form-field>
+  </form>
+  <button type="submit" mat-raised-button color="primary" (click)="send()">
+    LET'S GO
+  </button>
+</div>

@@ -1,0 +1,16 @@
+@use "../../../assets/sass/variables" as *;
+
+mat-toolbar {
+  height: 5rem;
+  background-color: $light-text;
+  padding: 0 4rem;
+  border-bottom: 1px solid $primary-lighter;
+  .logo {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: $primary;
+    font-size: 2rem;
+    svg {
+      fill: $primary;
+    }
+  }
+}

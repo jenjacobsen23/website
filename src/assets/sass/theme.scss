@@ -1,0 +1,106 @@
+@use "@angular/material" as mat;
+@use "variables" as *;
+
+@include mat.core();
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserrat/Montserrat-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserrat/Montserrat-Light.ttf") format("truetype");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserrat/Montserrat-Medium.ttf") format("truetype");
+  font-weight: 500;
+}
+
+// Define palettes
+$primary-palette: (
+  main: $primary,
+  lighter: $primary-lighter,
+  darker: $primary-darker,
+  200: $primary,
+  contrast: (
+    main: $light-text,
+    lighter: #000000,
+    darker: $light-text,
+  ),
+);
+
+$accent-palette: (
+  main: $accent,
+  lighter: $accent-lighter,
+  darker: $accent-darker,
+  200: $accent,
+  contrast: (
+    main: #000000,
+    lighter: #000000,
+    darker: #000000,
+  ),
+);
+
+$warn-palette: (
+  main: $warning,
+  lighter: $warning-lighter,
+  darker: $warning-darker,
+  200: $warning,
+  contrast: (
+    main: $light-text,
+    lighter: #000000,
+    darker: $light-text,
+  ),
+);
+
+// Define themes
+$light-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: mat.define-palette($primary-palette, main, lighter, darker),
+      accent: mat.define-palette($accent-palette, main, lighter, darker),
+      warn: mat.define-palette($warn-palette, main, lighter, darker),
+    ),
+    typography: mat.define-typography-config(),
+    density: 0,
+  )
+);
+
+$dark-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: mat.define-palette($primary-palette, main, lighter, darker),
+      accent: mat.define-palette($accent-palette, main, lighter, darker),
+      warn: mat.define-palette($warn-palette, main, lighter, darker),
+    ),
+    typography: mat.define-typography-config(),
+    density: -1,
+  )
+);
+
+// Apply themes
+@include mat.all-component-themes($light-theme);
+
+.dark-theme {
+  @include mat.all-component-colors($dark-theme);
+}
+
+// Light & Dark Background/Text styles
+body {
+  --primary-color: #339fcc;
+  --primary-lighter-color: #c2e2f0;
+  --primary-darker-color: #2083b9;
+  --text-primary-color: #000000;
+  --background-primary-color: #fafafa;
+}
+
+.dark-theme {
+  --text-primary-color: $light-text;
+  --background-primary-color: #2c2c2c;
+}

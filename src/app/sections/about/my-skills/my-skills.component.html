@@ -1,0 +1,13 @@
+<h3 class="section-sub-heading">Skills &amp; Tools</h3>
+
+<div class="d-flex flex-wrap gap-3">
+  <ng-container *ngFor="let skill of skills">
+    <div class="skill-pill rounded-3">{{ skill }}</div>
+  </ng-container>
+</div>
+
+<div class="tools-group d-flex flex-wrap gap-3">
+  <ng-container *ngFor="let tool of tools">
+    <div class="skill-pill rounded-3">{{ tool }}</div>
+  </ng-container>
+</div>

@@ -1,0 +1,28 @@
+@use "_variables" as *;
+@use "_common" as *;
+html,
+body {
+  height: 100%;
+  font-size: 16px; // 1rem = 16px
+}
+
+@media only screen and (max-width: 1000px) {
+  html,
+  body {
+    font-size: 14px; // 1rem = 12px
+  }
+  .container {
+    width: 90%;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: $primary-font !important;
+  font-weight: 300;
+  line-height: 1.6;
+
+  p span {
+    font-weight: 500;
+  }
+}

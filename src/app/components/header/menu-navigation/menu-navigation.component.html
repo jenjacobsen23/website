@@ -1,0 +1,15 @@
+<div class="d-flex align-items-center">
+  <mat-icon
+    [matMenuTriggerFor]="menu"
+    aria-hidden="false"
+    aria-label="Example home icon"
+    fontIcon="menu"
+    class="pe-auto"
+  ></mat-icon>
+  <mat-menu #menu="matMenu">
+    <a href="#"><button mat-menu-item>HOME</button></a>
+    <a href="#about"><button mat-menu-item>ABOUT</button></a>
+    <a href="#experience"><button mat-menu-item>EXPERIENCE</button></a>
+    <a href="#contact"><button mat-menu-item>CONTACT</button></a>
+  </mat-menu>
+</div>

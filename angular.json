@@ -30,7 +30,11 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/assets/sass/theme.scss",              
+              "node_modules/bootstrap/dist/css/bootstrap-grid.min.css",
+              "node_modules/bootstrap/dist/css/bootstrap-utilities.min.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.min.css",
+              "src/assets/sass/base.scss"
             ],
             "scripts": []
           },
@@ -90,7 +94,12 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/assets/sass/theme.scss",              
+              "node_modules/bootstrap/dist/css/bootstrap-grid.min.css",
+              "node_modules/bootstrap/dist/css/bootstrap-utilities.min.css",
+              "src/assets/sass/base.scss",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.min.css"
+              
             ],
             "scripts": []
           }
