@@ -1,0 +1,45 @@
+@use "../../../assets/sass/variables" as *;
+
+.landing-container {
+  position: absolute;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../../../assets/images/AdobeStock_351480226.jpeg");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transform: scaleY(-1);
+    opacity: 0.6;
+    z-index: -1;
+  }
+
+  .landing-content {
+    padding: 18rem 0 13rem 0;
+    margin: auto;
+    row-gap: 2rem;
+    color: $dark-text;
+    width: 90%;
+    text-align: center;
+
+    h1.heading-primary {
+      font-size: 3.5rem;
+      margin: 0;
+    }
+    h2.tagline {
+      margin: 0;
+      font-weight: 300;
+    }
+    button {
+      margin-top: 3rem;
+    }
+  }
+}

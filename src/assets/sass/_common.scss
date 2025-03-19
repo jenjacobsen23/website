@@ -1,0 +1,104 @@
+@use "../../assets/sass/variables" as *;
+
+.primary-text-color {
+  color: $primary;
+}
+
+/* button css */
+button.btn-large {
+  height: 3.5rem;
+  padding: 0 3rem;
+  font-size: 1.5rem;
+}
+
+button.btn-medium {
+  height: 2.5rem;
+  padding: 1.5rem 2.5rem;
+  font-size: 1rem;
+}
+
+button a,
+button {
+  color: $light-text !important;
+}
+
+/* link css */
+
+a {
+  text-decoration: none;
+  color: $dark-text-lighter;
+  font-weight: 600;
+  &:hover,
+  &:hover button {
+    color: $primary;
+  }
+  &.decorate {
+    text-decoration: underline;
+  }
+}
+
+.mat-mdc-menu-item-text {
+  font-weight: 500 !important;
+}
+
+/* section headings and sub headings */
+
+.section-heading {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  letter-spacing: 0.1875rem;
+  text-align: center;
+  margin-bottom: 3.5rem;
+  position: relative;
+  color: $dark-text;
+  &::after {
+    content: "";
+    position: absolute;
+    top: calc(100% + 1.5rem);
+    height: 0.3125rem;
+    width: 3rem;
+    background: $primary;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+  }
+}
+
+.section-tag-line {
+  color: $dark-text-lighter;
+  font-size: 1.2rem;
+}
+
+.section-sub-heading {
+  font-size: 1.5rem;
+}
+
+/* vertical and horizontal lines */
+hr.faded-hr {
+  border-color: $dark-text-lighter;
+}
+span.vr {
+  margin: 0 5px -5px 5px;
+}
+
+/**/
+
+.skill-pill {
+  background-color: $primary-lighter-rgba;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: $dark-text;
+  font-weight: 300;
+
+  &.small {
+    font-size: 0.9rem;
+  }
+}
+
+/** mat-dialog styles **/
+h2.mat-mdc-dialog-title .mdc-dialog__title {
+  padding: 9px 24px !important;
+}

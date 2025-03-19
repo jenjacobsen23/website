@@ -1,0 +1,23 @@
+@use "../../../assets/sass/variables" as *;
+
+.footer-container {
+  background-color: $dark-text;
+  color: $light-text;
+  padding: 2rem 0;
+
+  .social-fonts {
+    font-size: 1.5rem;
+
+    a {
+      color: $primary;
+    }
+  }
+
+  p {
+    font-weight: 300;
+  }
+
+  hr {
+    margin-top: 0.875rem;
+  }
+}

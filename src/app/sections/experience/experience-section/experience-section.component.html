@@ -1,0 +1,16 @@
+<div class="experience-container">
+  <ng-content select="title"></ng-content>
+  <div *ngIf="showIcons" class="d-flex gap-1">
+    <i class="devicon-typescript-plain primary-text-color"></i>
+    <i class="devicon-angular-plain primary-text-color"></i>
+    <i class="devicon-csharp-plain primary-text-color"></i>
+    <i class="devicon-dotnetcore-plain primary-text-color"></i>
+    <i class="devicon-azuresqldatabase-plain primary-text-color"></i>
+    <ng-container *ngFor="let icon of additionalIcons">
+      <i class="primary-text-color" [class]="icon"></i>
+    </ng-container>
+  </div>
+  <ng-content select="project-description"></ng-content>
+  <br />
+  <img [src]="imageSrc" style="width: 100%" />
+</div>
