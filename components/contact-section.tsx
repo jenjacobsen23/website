@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Mail, Phone, MapPin, Send, Lightbulb, Github, Linkedin, Twitter } from 'lucide-react';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 export function ContactSection() {
   const [formData, setFormData] = useState({
@@ -24,13 +26,81 @@ export function ContactSection() {
     techPreferences: '',
     timeline: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Validation schema
+  const contactSchema = z.object({
+    name: z.string().min(1, 'Name is required'),
+    email: z.string().email('Invalid email address'),
+    projectVision: z.string().min(10, 'Project vision must be at least 10 characters'),
+    techPreferences: z.string().optional(),
+    timeline: z.string().min(1, 'Timeline is required'),
+  });
+
+  const validateForm = () => {
+    try {
+      contactSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        error.errors.forEach(err => {
+          if (err.path[0]) {
+            newErrors[err.path[0] as string] = err.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-    // Reset form
-    setFormData({ name: '', email: '', projectVision: '', techPreferences: '', timeline: '' });
+
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success(result.message);
+        // Reset form
+        setFormData({ name: '', email: '', projectVision: '', techPreferences: '', timeline: '' });
+        setErrors({});
+      } else {
+        toast.error(result.message || 'Failed to send message');
+        if (result.errors) {
+          const newErrors: Record<string, string> = {};
+          result.errors.forEach((err: any) => {
+            if (err.path[0]) {
+              newErrors[err.path[0] as string] = err.message;
+            }
+          });
+          setErrors(newErrors);
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -177,8 +247,12 @@ export function ContactSection() {
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="border-border focus:border-primary"
+                        className={`border-border focus:border-primary ${
+                          errors.name ? 'border-red-500' : ''
+                        }`}
+                        disabled={isSubmitting}
                       />
+                      {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium mb-2">
@@ -191,8 +265,12 @@ export function ContactSection() {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="border-border focus:border-primary"
+                        className={`border-border focus:border-primary ${
+                          errors.email ? 'border-red-500' : ''
+                        }`}
+                        disabled={isSubmitting}
                       />
+                      {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
                   </div>
 
@@ -207,9 +285,15 @@ export function ContactSection() {
                       onChange={handleChange}
                       required
                       rows={4}
-                      className="border-border focus:border-primary resize-none"
+                      className={`border-border focus:border-primary resize-none ${
+                        errors.projectVision ? 'border-red-500' : ''
+                      }`}
                       placeholder="Describe your project vision, goals, and what problem you're trying to solve..."
+                      disabled={isSubmitting}
                     />
+                    {errors.projectVision && (
+                      <p className="text-red-500 text-sm mt-1">{errors.projectVision}</p>
+                    )}
                   </div>
 
                   <div>
@@ -223,6 +307,7 @@ export function ContactSection() {
                       onChange={handleChange}
                       className="border-border focus:border-primary"
                       placeholder="e.g., Angular, .NET, React Native, SQL Server, or open to suggestions"
+                      disabled={isSubmitting}
                     />
                   </div>
 
@@ -230,8 +315,16 @@ export function ContactSection() {
                     <label htmlFor="timeline" className="block text-sm font-medium mb-2">
                       Timeline *
                     </label>
-                    <Select onValueChange={value => handleSelectChange('timeline', value)} required>
-                      <SelectTrigger className="border-border focus:border-primary">
+                    <Select
+                      onValueChange={value => handleSelectChange('timeline', value)}
+                      required
+                      disabled={isSubmitting}
+                    >
+                      <SelectTrigger
+                        className={`border-border focus:border-primary ${
+                          errors.timeline ? 'border-red-500' : ''
+                        }`}
+                      >
                         <SelectValue placeholder="Select your preferred timeline" />
                       </SelectTrigger>
                       <SelectContent>
@@ -243,15 +336,28 @@ export function ContactSection() {
                         <SelectItem value="flexible">Flexible timeline</SelectItem>
                       </SelectContent>
                     </Select>
+                    {errors.timeline && (
+                      <p className="text-red-500 text-sm mt-1">{errors.timeline}</p>
+                    )}
                   </div>
 
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground teal-glow"
+                    disabled={isSubmitting}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground teal-glow disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Send My Vision
-                    <Send className="ml-2 h-5 w-5" />
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Send My Vision
+                        <Send className="ml-2 h-5 w-5" />
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>
