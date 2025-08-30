@@ -4,15 +4,20 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { useScrollToSection } from '@/hooks/use-scroll-to-section';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { useTheme } from 'next-themes';
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { scrollToSection } = useScrollToSection();
+  const { theme } = useTheme();
 
   const handleScrollToSection = (sectionId: string) => {
     scrollToSection(sectionId);
     setIsMenuOpen(false);
   };
+
+  const logoSrc = theme === 'light' ? '/logo-no-bg-light.svg' : '/logo-no-bg.svg';
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -21,7 +26,7 @@ export function Navigation() {
           <div className="flex items-center">
             <div className="relative w-60 h-16 flex items-center justify-center overflow-hidden">
               <img
-                src="/logo-no-bg.svg"
+                src={logoSrc}
                 alt="Jen Jacobsen Logo"
                 className="transform scale-[.8] cursor-pointer"
                 onClick={() => handleScrollToSection('hero')}
@@ -61,10 +66,12 @@ export function Navigation() {
             >
               Contact
             </button>
+            <ThemeToggle />
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+          {/* Mobile menu button and theme toggle */}
+          <div className="md:hidden flex items-center space-x-2">
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>

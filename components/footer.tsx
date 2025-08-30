@@ -1,13 +1,19 @@
+'use client';
+
 import { Github, Linkedin, Mail } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 export function Footer() {
+  const { theme } = useTheme();
+  const logoSrc = theme === 'light' ? '/logo-no-bg-light.svg' : '/logo-no-bg.svg';
+
   return (
     <footer className="bg-card/50 border-t border-border py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo and Tagline */}
           <div className="relative w-60 h-16 flex items-center justify-center overflow-hidden">
-            <img src="/logo-no-bg.svg" alt="Jen Jacobsen Logo" className="transform scale-[.6]" />
+            <img src={logoSrc} alt="Jen Jacobsen Logo" className="transform scale-[.6]" />
             {/* <div>
               <p className="font-bold text-lg">Jen Jacobsen</p>
               <p className="text-sm text-primary">Your Vision, Expertly Coded</p>
