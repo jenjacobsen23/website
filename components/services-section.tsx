@@ -1,7 +1,24 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Code, Database, Smartphone, Globe, Cog, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Code,
+  Database,
+  Smartphone,
+  Globe,
+  Cog,
+  Users,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useExpandable } from '@/hooks/use-expandable';
 
 export function ServicesSection() {
+  const isMobile = useIsMobile();
+  const { isExpanded, toggleItem } = useExpandable();
+
   const services = [
     {
       icon: Globe,
@@ -85,38 +102,65 @@ export function ServicesSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div
+          className={`grid gap-8 ${
+            isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+          }`}
+        >
           {services.map((service, index) => {
             const IconComponent = service.icon;
+            const expanded = isExpanded(index);
+            const ChevronIcon = expanded ? ChevronUp : ChevronDown;
+
             return (
               <Card
                 key={index}
-                className="bg-card border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg group"
+                className={`bg-card border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg group ${
+                  isMobile ? 'cursor-pointer' : ''
+                }`}
+                onClick={isMobile ? () => toggleItem(index) : undefined}
               >
                 <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                      <IconComponent className="h-6 w-6 text-primary" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                        <IconComponent className="h-6 w-6 text-primary" />
+                      </div>
+                      <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                        {service.title}
+                      </CardTitle>
                     </div>
+                    {isMobile && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={e => {
+                          e.stopPropagation();
+                          toggleItem(index);
+                        }}
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground cursor-pointer"
+                      >
+                        <ChevronIcon className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
-                  <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                    {service.title}
-                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">{service.description}</p>
-                  <div>
-                    <h4 className="font-semibold mb-2 text-sm">Key Features:</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      {service.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center">
-                          <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 flex-shrink-0"></span>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </CardContent>
+                {(!isMobile || expanded) && (
+                  <CardContent className="space-y-4 animate-in slide-in-from-top-2 duration-300">
+                    <p className="text-muted-foreground leading-relaxed">{service.description}</p>
+                    <div>
+                      <h4 className="font-semibold mb-2 text-sm">Key Features:</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        {service.features.map((feature, featureIndex) => (
+                          <li key={featureIndex} className="flex items-center">
+                            <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 flex-shrink-0"></span>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CardContent>
+                )}
               </Card>
             );
           })}

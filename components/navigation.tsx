@@ -3,19 +3,14 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
+import { useScrollToSection } from '@/hooks/use-scroll-to-section';
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { scrollToSection } = useScrollToSection();
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const elementPosition = element.offsetTop - 20;
-      window.scrollTo({
-        top: elementPosition,
-        behavior: 'smooth',
-      });
-    }
+  const handleScrollToSection = (sectionId: string) => {
+    scrollToSection(sectionId);
     setIsMenuOpen(false);
   };
 
@@ -29,7 +24,7 @@ export function Navigation() {
                 src="/logo-no-bg.svg"
                 alt="Jen Jacobsen Logo"
                 className="transform scale-[.8] cursor-pointer"
-                onClick={() => scrollToSection('hero')}
+                onClick={() => handleScrollToSection('hero')}
               />
             </div>
           </div>
@@ -37,31 +32,31 @@ export function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <button
-              onClick={() => scrollToSection('about')}
+              onClick={() => handleScrollToSection('about')}
               className="text-foreground hover:text-primary transition-colors cursor-pointer"
             >
               About
             </button>
             <button
-              onClick={() => scrollToSection('skills')}
+              onClick={() => handleScrollToSection('skills')}
               className="text-foreground hover:text-primary transition-colors cursor-pointer"
             >
               Skills
             </button>
             <button
-              onClick={() => scrollToSection('projects')}
+              onClick={() => handleScrollToSection('projects')}
               className="text-foreground hover:text-primary transition-colors cursor-pointer"
             >
               Projects
             </button>
             <button
-              onClick={() => scrollToSection('services')}
+              onClick={() => handleScrollToSection('services')}
               className="text-foreground hover:text-primary transition-colors cursor-pointer"
             >
               Services
             </button>
             <button
-              onClick={() => scrollToSection('contact')}
+              onClick={() => handleScrollToSection('contact')}
               className="text-foreground hover:text-primary transition-colors cursor-pointer"
             >
               Contact
@@ -81,31 +76,31 @@ export function Navigation() {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-card border-t border-border">
               <button
-                onClick={() => scrollToSection('about')}
+                onClick={() => handleScrollToSection('about')}
                 className="block px-3 py-2 text-foreground hover:text-primary transition-colors w-full text-left cursor-pointer"
               >
                 About
               </button>
               <button
-                onClick={() => scrollToSection('skills')}
+                onClick={() => handleScrollToSection('skills')}
                 className="block px-3 py-2 text-foreground hover:text-primary transition-colors w-full text-left cursor-pointer"
               >
                 Skills
               </button>
               <button
-                onClick={() => scrollToSection('projects')}
+                onClick={() => handleScrollToSection('projects')}
                 className="block px-3 py-2 text-foreground hover:text-primary transition-colors w-full text-left cursor-pointer"
               >
                 Projects
               </button>
               <button
-                onClick={() => scrollToSection('services')}
+                onClick={() => handleScrollToSection('services')}
                 className="block px-3 py-2 text-foreground hover:text-primary transition-colors w-full text-left cursor-pointer"
               >
                 Services
               </button>
               <button
-                onClick={() => scrollToSection('contact')}
+                onClick={() => handleScrollToSection('contact')}
                 className="block px-3 py-2 text-foreground hover:text-primary transition-colors w-full text-left cursor-pointer"
               >
                 Contact

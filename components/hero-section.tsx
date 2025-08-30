@@ -2,14 +2,10 @@
 
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Mail } from 'lucide-react';
+import { useScrollToSection } from '@/hooks/use-scroll-to-section';
 
 export function HeroSection() {
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  const { scrollToSection } = useScrollToSection();
 
   return (
     <section

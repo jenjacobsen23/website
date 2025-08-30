@@ -23,9 +23,16 @@ import {
   Zap,
   TestTube,
   Code,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useExpandable } from '@/hooks/use-expandable';
 
 export function ProjectsSection() {
+  const isMobile = useIsMobile();
+  const { isExpanded, toggleItem } = useExpandable();
+
   const projects = [
     {
       icon: Building2,
@@ -139,7 +146,7 @@ export function ProjectsSection() {
     {
       icon: Globe,
       title: 'BOOST HEALTH LABS',
-      label: 'Corporate Application | Rebrand & Current Development',
+      label: 'Corporate Application | Rebrand & Current',
       description:
         'Led complete app reskin and rebranding from Brain Changer to flip* (BOOST Health Labs), implementing new visual identity and continuing development of enhanced features for the health and wellness platform.',
       features: [
@@ -235,123 +242,146 @@ export function ProjectsSection() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           {projects.map((project, index) => {
             const IconComponent = project.icon;
+            const expanded = isExpanded(index);
+            const ChevronIcon = expanded ? ChevronUp : ChevronDown;
+
             return (
               <Card
                 key={index}
-                className="bg-card border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl group"
+                className={`bg-card border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl group ${
+                  isMobile ? 'cursor-pointer' : ''
+                }`}
+                onClick={isMobile ? () => toggleItem(index) : undefined}
               >
                 <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <IconComponent className="h-6 w-6 text-primary" />
-                    <CardTitle className="text-lg font-bold group-hover:text-primary transition-colors">
-                      {project.title}
-                    </CardTitle>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <IconComponent className="h-6 w-6 text-primary" />
+                      <CardTitle className="text-lg font-bold group-hover:text-primary transition-colors">
+                        {project.title}
+                      </CardTitle>
+                    </div>
+                    {isMobile && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={e => {
+                          e.stopPropagation();
+                          toggleItem(index);
+                        }}
+                        className="text-muted-foreground hover:text-foreground cursor-pointer"
+                      >
+                        <ChevronIcon className="h-5 w-5" />
+                      </Button>
+                    )}
                   </div>
                   <Badge variant="outline" className="border-primary/30 text-primary w-fit">
                     {project.label}
                   </Badge>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <p className="text-muted-foreground leading-relaxed">{project.description}</p>
+                {(!isMobile || expanded) && (
+                  <CardContent className="space-y-6 animate-in slide-in-from-top-2 duration-300">
+                    <p className="text-muted-foreground leading-relaxed">{project.description}</p>
 
-                  <div>
-                    <h4 className="font-semibold mb-3">Key Features:</h4>
-                    <ul className="text-sm text-muted-foreground space-y-2">
-                      {project.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start">
-                          <span className="text-primary mr-2 mt-1">-</span>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-3">Built With:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech, techIndex) => (
-                        <span key={techIndex} className="text-primary font-medium">
-                          {tech}
-                          {techIndex < project.technologies.length - 1 && (
-                            <span className="text-muted-foreground mx-1">•</span>
-                          )}
-                        </span>
-                      ))}
+                    <div>
+                      <h4 className="font-semibold mb-3">Key Features:</h4>
+                      <ul className="text-sm text-muted-foreground space-y-2">
+                        {project.features.map((feature, featureIndex) => (
+                          <li key={featureIndex} className="flex items-start">
+                            <span className="text-primary mr-2 mt-1">-</span>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
 
-                  {/* <div className="flex gap-2 pt-2">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground bg-transparent"
-                        >
-                          <FileText className="h-4 w-4 mr-2" />
-                          Technical Details
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-6xl max-h-[85vh] overflow-hidden">
-                        <DialogHeader className="border-b border-primary/20 pb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-                              <IconComponent className="h-6 w-6 text-primary" />
+                    <div>
+                      <h4 className="font-semibold mb-3">Built With:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {project.technologies.map((tech, techIndex) => (
+                          <span key={techIndex} className="text-primary font-medium">
+                            {tech}
+                            {techIndex < project.technologies.length - 1 && (
+                              <span className="text-muted-foreground mx-1">•</span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* <div className="flex gap-2 pt-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground bg-transparent"
+                          >
+                            <FileText className="h-4 w-4 mr-2" />
+                            Technical Details
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-6xl max-h-[85vh] overflow-hidden">
+                          <DialogHeader className="border-b border-primary/20 pb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+                                <IconComponent className="h-6 w-6 text-primary" />
+                              </div>
+                              <div>
+                                <DialogTitle className="text-xl font-bold text-primary">
+                                  {project.title}
+                                </DialogTitle>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  Technical Deep Dive
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <DialogTitle className="text-xl font-bold text-primary">
-                                {project.title}
-                              </DialogTitle>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                Technical Deep Dive
-                              </p>
+                          </DialogHeader>
+
+                          <div className="overflow-y-auto pr-2 max-h-[calc(85vh-120px)]">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                              {renderTechnicalSection(
+                                'ARCHITECTURE OVERVIEW',
+                                project.technicalDetails.architecture,
+                                Server
+                              )}
+
+                              {renderTechnicalSection(
+                                'DATABASE DESIGN',
+                                project.technicalDetails.database,
+                                Database
+                              )}
+
+                              {renderTechnicalSection(
+                                'API ENDPOINTS',
+                                project.technicalDetails.apiEndpoints,
+                                Code
+                              )}
+
+                              {renderTechnicalSection(
+                                'SECURITY IMPLEMENTATION',
+                                project.technicalDetails.security,
+                                Shield
+                              )}
+
+                              {renderTechnicalSection(
+                                'PERFORMANCE OPTIMIZATIONS',
+                                project.technicalDetails.performance,
+                                Zap
+                              )}
+
+                              {renderTechnicalSection(
+                                'TESTING STRATEGY',
+                                project.technicalDetails.testing,
+                                TestTube
+                              )}
                             </div>
                           </div>
-                        </DialogHeader>
-
-                        <div className="overflow-y-auto pr-2 max-h-[calc(85vh-120px)]">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                            {renderTechnicalSection(
-                              'ARCHITECTURE OVERVIEW',
-                              project.technicalDetails.architecture,
-                              Server
-                            )}
-
-                            {renderTechnicalSection(
-                              'DATABASE DESIGN',
-                              project.technicalDetails.database,
-                              Database
-                            )}
-
-                            {renderTechnicalSection(
-                              'API ENDPOINTS',
-                              project.technicalDetails.apiEndpoints,
-                              Code
-                            )}
-
-                            {renderTechnicalSection(
-                              'SECURITY IMPLEMENTATION',
-                              project.technicalDetails.security,
-                              Shield
-                            )}
-
-                            {renderTechnicalSection(
-                              'PERFORMANCE OPTIMIZATIONS',
-                              project.technicalDetails.performance,
-                              Zap
-                            )}
-
-                            {renderTechnicalSection(
-                              'TESTING STRATEGY',
-                              project.technicalDetails.testing,
-                              TestTube
-                            )}
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div> */}
-                </CardContent>
+                        </DialogContent>
+                      </Dialog>
+                    </div> */}
+                  </CardContent>
+                )}
               </Card>
             );
           })}
