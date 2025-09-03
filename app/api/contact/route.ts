@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     // Send email using Resend
     const { data, error } = await resend.emails.send({
       from: process.env.FROM_EMAIL || 'noreply@jenjacobsen.com',
-      to: [validatedData.email, 'contact@jenjacobsen.com'],
+      to: 'contact@jenjacobsen.com',
       subject: 'New Contact Form Submission - Jen Jacobsen',
       html: emailHTML,
       text: emailText,
