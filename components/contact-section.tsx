@@ -329,7 +329,6 @@ export function ContactSection() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="asap">ASAP (Rush project)</SelectItem>
-                        <SelectItem value="1-2weeks">1-2 weeks</SelectItem>
                         <SelectItem value="1month">1 month</SelectItem>
                         <SelectItem value="2-3months">2-3 months</SelectItem>
                         <SelectItem value="3-6months">3-6 months</SelectItem>
