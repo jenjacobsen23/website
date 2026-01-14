@@ -105,7 +105,7 @@ jen-portfolio/
    ```env
    # Resend Configuration (for contact form)
    RESEND_API_KEY=re_your_api_key_here
-   FROM_EMAIL=noreply@yourdomain.com
+   FROM_EMAIL=noreply@resend.dev
    ```
 
 4. **Run the development server**

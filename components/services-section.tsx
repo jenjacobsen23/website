@@ -11,6 +11,7 @@ import {
   Users,
   ChevronDown,
   ChevronUp,
+  ShoppingBag,
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useExpandable } from '@/hooks/use-expandable';
@@ -18,6 +19,9 @@ import { useExpandable } from '@/hooks/use-expandable';
 export function ServicesSection() {
   const isMobile = useIsMobile();
   const { isExpanded, toggleItem } = useExpandable();
+
+  const GUMROAD_PRODUCT_URL =
+    'https://jenjacobsen.gumroad.com/l/production-ready-react-native-boilerplate?utm_source=jenjacobsen&utm_medium=website&utm_campaign=services_callout';
 
   const services = [
     {
@@ -164,6 +168,42 @@ export function ServicesSection() {
               </Card>
             );
           })}
+        </div>
+
+        {/* Starter Kit Callout */}
+        <div className="mt-8">
+          <div className="bg-card/80 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">
+                  STARTER KIT
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                React Native Boilerplate (Expo + Firebase + Sentry)
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                A production-ready React Native (Expo) boilerplate with Firebase + Sentry + EAS already wired up—so you can start building features instead of infrastructure.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 sm:gap-2 shrink-0">
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <a
+                    href={GUMROAD_PRODUCT_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5"
+                  >
+                    <ShoppingBag className="h-4 w-4" />
+                    Buy on Gumroad
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

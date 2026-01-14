@@ -1,11 +1,24 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Mail } from 'lucide-react';
+import { ArrowRight, Mail, ShoppingBag } from 'lucide-react';
 import { useScrollToSection } from '@/hooks/use-scroll-to-section';
 
 export function HeroSection() {
   const { scrollToSection } = useScrollToSection();
+
+  // TODO: Replace with your actual Gumroad product URL
+  const GUMROAD_PRODUCT_URL =
+  'https://jenjacobsen.gumroad.com/l/production-ready-react-native-boilerplate?utm_source=jenjacobsen&utm_medium=website&utm_campaign=hero_featured';
+
+  
+  // TODO: Update these product details
+  const featuredProduct = {
+    name: 'React Native Boilerplate (Expo + Firebase + Sentry)', // TODO: Short product name
+    description: 'A production-ready React Native (Expo) boilerplate with Firebase + Sentry + EAS already wired up—so you can start building features instead of infrastructure.', // TODO: One sentence description
+    price: 'USD $69', // TODO: Optional - update with price or remove if not shown
+    showPrice: true, // TODO: Set to false to hide price
+  };
 
   return (
     <section
@@ -56,6 +69,49 @@ export function HeroSection() {
               Contact Me
               <Mail className="ml-2 h-5 w-5" />
             </Button>
+          </div>
+
+          {/* Compact Featured Product Callout */}
+          <div className="flex justify-center pt-8 animate-fade-in-up animation-delay-600 text-left">
+            <div className="max-w-[900px] w-full px-4">
+              <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg p-3 sm:p-4 hover:border-primary/50 transition-all duration-300">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">
+                      Featured resource
+                    </div>
+                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-wrap">
+                      <h3 className="text-base sm:text-lg font-semibold text-foreground leading-tight">
+                        {featuredProduct.name}
+                      </h3>
+                      {featuredProduct.showPrice && (
+                        <span className="text-sm text-primary font-medium shrink-0">
+                         {featuredProduct.price}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-1.5">
+                      {featuredProduct.description}
+                    </p>
+                  </div>
+                  <Button
+                    asChild
+                    size="sm"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shrink-0 text-xs sm:text-sm h-8 sm:h-9"
+                  >
+                    <a
+                      href={GUMROAD_PRODUCT_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5"                      
+                    >
+                      <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      Buy on Gumroad
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
