@@ -37,16 +37,24 @@ export function Footer() {
     setIsSubmitting(true);
 
     try {
-      // TODO: Replace with your email capture API endpoint
-      // For now, this is a placeholder that shows success
-      // You can integrate with your email service (Resend, Mailchimp, ConvertKit, etc.)
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      toast.success('Thanks! You\'ll be notified about new tools.');
-      setEmail('');
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success(result.message);
+        setEmail('');
+      } else {
+        toast.error(result.message || 'Failed to subscribe. Please try again.');
+      }
     } catch (error) {
+      console.error('Error submitting subscription:', error);
       toast.error('Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
