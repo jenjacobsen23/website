@@ -4,13 +4,16 @@ import React, { useState } from 'react';
 import { Github, Linkedin, Mail, ArrowRight } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useScrollToSection } from '@/hooks/use-scroll-to-section';
+import { usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { trackGumroadClick } from '@/lib/analytics';
 
 export function Footer() {
   const { theme } = useTheme();
   const { scrollToSection } = useScrollToSection();
+  const pathname = usePathname();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -25,6 +28,10 @@ export function Footer() {
   // Gumroad product URL
   const GUMROAD_PRODUCT_URL =
     'https://jenjacobsen.gumroad.com/l/production-ready-react-native-boilerplate?utm_source=jenjacobsen&utm_medium=website&utm_campaign=footer_cta';
+
+  const handleGumroadClick = (linkText: string) => {
+    trackGumroadClick(pathname || '/', linkText, GUMROAD_PRODUCT_URL);
+  };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +84,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-sm text-foreground hover:text-primary transition-colors"
+                onClick={() => handleGumroadClick('React Native Boilerplate')}
               >
                 React Native Boilerplate <span className="text-xs text-primary">(new)</span>
               </a>
@@ -110,6 +118,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline font-medium inline-flex items-center gap-1"
+                onClick={() => handleGumroadClick('Grab my Expo + Firebase + Sentry starter')}
               >
                 Grab my Expo + Firebase + Sentry starter
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -151,6 +160,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
+                  onClick={() => handleGumroadClick('RN Boilerplate')}
                 >
                   RN Boilerplate
                 </a>

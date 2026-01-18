@@ -15,13 +15,20 @@ import {
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useExpandable } from '@/hooks/use-expandable';
+import { usePathname } from 'next/navigation';
+import { trackGumroadClick } from '@/lib/analytics';
 
 export function ServicesSection() {
   const isMobile = useIsMobile();
   const { isExpanded, toggleItem } = useExpandable();
+  const pathname = usePathname();
 
   const GUMROAD_PRODUCT_URL =
     'https://jenjacobsen.gumroad.com/l/production-ready-react-native-boilerplate?utm_source=jenjacobsen&utm_medium=website&utm_campaign=services_callout';
+
+  const handleGumroadClick = () => {
+    trackGumroadClick(pathname || '/', 'Buy on Gumroad', GUMROAD_PRODUCT_URL);
+  };
 
   const services = [
     {
@@ -196,6 +203,7 @@ export function ServicesSection() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5"
+                    onClick={handleGumroadClick}
                   >
                     <ShoppingBag className="h-4 w-4" />
                     Buy on Gumroad

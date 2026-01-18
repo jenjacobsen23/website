@@ -3,13 +3,20 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Mail, ShoppingBag } from 'lucide-react';
 import { useScrollToSection } from '@/hooks/use-scroll-to-section';
+import { usePathname } from 'next/navigation';
+import { trackGumroadClick } from '@/lib/analytics';
 
 export function HeroSection() {
   const { scrollToSection } = useScrollToSection();
+  const pathname = usePathname();
 
   // TODO: Replace with your actual Gumroad product URL
   const GUMROAD_PRODUCT_URL =
   'https://jenjacobsen.gumroad.com/l/production-ready-react-native-boilerplate?utm_source=jenjacobsen&utm_medium=website&utm_campaign=hero_featured';
+
+  const handleGumroadClick = () => {
+    trackGumroadClick(pathname || '/', 'Buy on Gumroad', GUMROAD_PRODUCT_URL);
+  };
 
   
   // TODO: Update these product details
@@ -103,7 +110,8 @@ export function HeroSection() {
                       href={GUMROAD_PRODUCT_URL}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5"                      
+                      className="flex items-center gap-1.5"
+                      onClick={handleGumroadClick}
                     >
                       <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       Buy on Gumroad
