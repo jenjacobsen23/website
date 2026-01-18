@@ -80,6 +80,12 @@ export function Footer() {
               >
                 React Native Boilerplate <span className="text-xs text-primary">(new)</span>
               </a>
+              <a
+                href="/articles"
+                className="block text-sm text-foreground hover:text-primary transition-colors"
+              >
+                Articles
+              </a>
               <button
                 onClick={() => scrollToSection('projects')}
                 className="block text-sm text-foreground hover:text-primary transition-colors text-left cursor-pointer"

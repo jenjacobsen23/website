@@ -1,0 +1,475 @@
+---
+title: "How to set up Expo + Firebase with multiple environments (dev, staging, prod)"
+summary: "A clean, repeatable mental model for separating development, staging, and production environments in Expo apps using Firebase. No magic, no frameworks, just a setup you can reason about months later."
+publishedAt: "2026-01-01"
+updatedAt: "2026-01-01"
+tags: ["expo", "firebase", "react-native", "production"]
+---
+
+Separating development, staging, and production environments is one of those things everyone agrees is important — and yet it's often postponed until "later". In Expo projects using Firebase, that delay usually shows up as leaked secrets, broken builds, or production data being polluted during testing.
+
+This guide walks through a clean, repeatable mental model for setting up multi-environment Expo apps with Firebase. It's intentionally minimal: no magic, no frameworks, just a setup you can reason about months later.
+
+## Why multi-environment setup matters in real projects
+
+In small prototypes, a single Firebase project and a single set of environment variables feels fine. In real projects, it quickly becomes fragile.
+
+Common failure modes include:
+
+- Accidentally pointing a dev build at production Firestore
+- Shipping a build with the wrong Firebase credentials
+- OTA updates overwriting production behavior
+- Inconsistent behavior between local, EAS builds, and TestFlight / Play Store builds
+
+The cost of fixing these issues later is much higher than setting things up correctly from the start.
+
+## The mental model: what changes per environment (and what doesn't)
+
+A reliable setup starts with a simple rule:
+
+**Each environment is a different backend, but the same app.**
+
+That means:
+
+### What does change per environment
+
+- Firebase project (dev / staging / prod)
+- API keys and Firebase config (including storage bucket, measurement ID)
+- EAS build profile and update channel
+- Sentry environment (if used)
+- Native config files (`google-services.json`, `GoogleService-Info.plist`)
+- Optional: bundle identifiers / app IDs
+- Optional: named Firestore database ID (for multi-database setups)
+
+### What does not change
+
+- Application code
+- Feature logic
+- Navigation
+- Data models
+- Folder structure
+
+If you find yourself branching code heavily based on environment, the setup has already gone wrong.
+
+## Minimal environment structure
+
+A simple and predictable structure looks like this:
+
+```bash
+.env.development
+.env.staging
+.env.production
+```
+
+Each file contains only environment-specific values:
+
+```bash
+# App Configuration
+APP_ENV=development
+
+# EAS Configuration
+EAS_PROJECT_ID=your-eas-project-id
+EAS_UPDATE_URL=your-eas-update-url
+EXPO_OWNER=your-expo-username
+EXPO_SLUG=my-app
+
+# Firebase Configuration (all required except measurementId)
+EXPO_PUBLIC_FIREBASE_API_KEY=...
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+EXPO_PUBLIC_FIREBASE_APP_ID=...
+EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=...  # Optional but recommended
+
+# Optional: Named Firestore database (defaults to '(default)')
+EXPO_PUBLIC_FIREBASE_DATABASE_ID=...  # Only if using multiple databases
+
+# Sentry Configuration
+EXPO_PUBLIC_SENTRY_DSN=...
+SENTRY_ORG=...  # For native builds
+SENTRY_PROJECT=...  # For native builds
+
+# Platform-specific
+IOS_BUNDLE_ID=com.yourcompany.app
+ANDROID_PACKAGE=com.yourcompany.app
+IOS_GOOGLE_SERVICES_PLIST_PATH=./config/firebase/GoogleService-Info.dev.plist
+ANDROID_GOOGLE_SERVICES_JSON_PATH=./config/firebase/google-services.dev.json
+```
+
+Using `EXPO_PUBLIC_` ensures values are available in the Expo runtime. Secrets that should not ship to the client should live in EAS secrets instead.
+
+## Wiring environments into Expo
+
+### app.config.ts
+
+Use a single config file that loads the correct environment file and reads from the active environment:
+
+```typescript
+import { config } from 'dotenv';
+import { resolve } from 'path';
+import { ExpoConfig, ConfigContext } from 'expo/config';
+
+type AppEnv = 'development' | 'staging' | 'production';
+
+// Load environment-specific .env file based on APP_ENV
+function loadEnvFile(): void {
+  const appEnv = (process.env.APP_ENV || 'development').toLowerCase();
+  const envFile = `.env.${appEnv}`;
+  
+  // Load environment-specific file first
+  config({ path: resolve(process.cwd(), envFile) });
+  
+  // Also load base .env if it exists (for fallback values)
+  config({ path: resolve(process.cwd(), '.env') });
+}
+
+// Load environment variables before anything else
+loadEnvFile();
+
+function getEnv(): AppEnv {
+  const v = (process.env.APP_ENV || 'development').toLowerCase();
+  if (v === 'production' || v === 'staging' || v === 'development') return v as AppEnv;
+  return 'development';
+}
+
+export default ({ config }: ConfigContext): ExpoConfig => {
+  const appEnv = getEnv();
+  const nameSuffix = appEnv === 'production' ? '' : appEnv === 'staging' ? ' (Preview)' : ' (Dev)';
+
+  return {
+    ...config,
+    name: `MyApp${nameSuffix}`,
+    slug: process.env.EXPO_SLUG || 'my-app',
+    owner: process.env.EXPO_OWNER,
+    extra: {
+      appEnv,
+      firebase: {
+        apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+        authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+        measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
+      },
+      // Optional: Named Firestore database support
+      firebaseDatabaseId: process.env.EXPO_PUBLIC_FIREBASE_DATABASE_ID || undefined,
+      sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN || null,
+      eas: {
+        projectId: process.env.EAS_PROJECT_ID,
+      },
+    },
+    updates: {
+      url: process.env.EAS_UPDATE_URL,
+      enabled: true,
+      checkAutomatically: 'ON_LOAD',
+    },
+    // Platform-specific config
+    ios: {
+      bundleIdentifier: process.env.IOS_BUNDLE_ID,
+      googleServicesFile: process.env.IOS_GOOGLE_SERVICES_PLIST_PATH || './config/firebase/GoogleService-Info.dev.plist',
+    },
+    android: {
+      package: process.env.ANDROID_PACKAGE || 'com.yourcompany.app',
+      googleServicesFile: process.env.ANDROID_GOOGLE_SERVICES_JSON_PATH || './config/firebase/google-services.dev.json',
+    },
+  };
+};
+```
+
+There should be no branching logic here. The active environment is controlled externally via `APP_ENV`.
+
+### Development scripts
+
+Use `dotenv-cli` in your `package.json` to load the correct environment when starting the dev server:
+
+```json
+{
+  "scripts": {
+    "dev": "dotenv -e .env.development -- expo start -c",
+    "dev:staging": "dotenv -e .env.staging -- expo start -c",
+    "dev:production": "dotenv -e .env.production -- expo start -c"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^11.0.0"
+  }
+}
+```
+
+This ensures local development matches how EAS builds work: the environment is selected at runtime, not baked into the code.
+
+### EAS build profiles
+
+Your `eas.json` defines which environment file is loaded for each build:
+
+```json
+{
+  "build": {
+    "development": {
+      "channel": "dev",
+      "env": {
+        "APP_ENV": "development"
+      },
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "channel": "preview",
+      "env": {
+        "APP_ENV": "staging"
+      },
+      "distribution": "internal"
+    },
+    "production": {
+      "channel": "production",
+      "env": {
+        "APP_ENV": "production"
+      },
+      "autoIncrement": true
+    }
+  }
+}
+```
+
+The `app.config.ts` reads `APP_ENV` and loads the corresponding `.env.*` file automatically. This keeps:
+
+- local dev (`npm run dev`)
+- EAS builds (`eas build --profile development`)
+- CI builds
+
+all aligned.
+
+**Note:** The build profile name (`preview`) can differ from the environment value (`staging`). This allows semantic naming (preview, staging, production) while maintaining clear environment separation.
+
+## Firebase initialization (defensive by default)
+
+A common mistake is assuming Firebase always initializes correctly. In multi-environment setups, that assumption breaks quickly.
+
+A safer pattern:
+
+1. **Validate config before initialization**
+2. **Fail loudly and early**
+3. **Make it obvious which environment is active**
+4. **Support optional named databases with fallback**
+
+Here's a minimal implementation:
+
+```typescript
+import Constants from 'expo-constants';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { getFirestore, Firestore } from 'firebase/firestore';
+
+const firebaseConfig = Constants.expoConfig?.extra?.firebase;
+
+// Validate Firebase config
+function isValidFirebaseConfig(config: any): config is {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  appId: string;
+} {
+  return (
+    config &&
+    typeof config === 'object' &&
+    typeof config.apiKey === 'string' &&
+    config.apiKey.length > 0 &&
+    typeof config.authDomain === 'string' &&
+    typeof config.projectId === 'string' &&
+    typeof config.appId === 'string'
+  );
+}
+
+let firebaseApp: FirebaseApp | null = null;
+let firestoreDb: Firestore | null = null;
+
+if (isValidFirebaseConfig(firebaseConfig)) {
+  try {
+    // Initialize app (single instance)
+    if (!getApps().length) {
+      firebaseApp = initializeApp(firebaseConfig);
+      console.log('✅ Firebase app initialized');
+    } else {
+      firebaseApp = getApp();
+    }
+    
+    // Log active environment and project
+    const appEnv = Constants.expoConfig?.extra?.appEnv || 'unknown';
+    console.log(`🔍 Firebase Config Check (${appEnv}):`);
+    console.log('  Project ID:', firebaseConfig.projectId);
+    
+    // Initialize Firestore (with optional named database support)
+    const databaseId = Constants.expoConfig?.extra?.firebaseDatabaseId;
+    
+    if (databaseId && databaseId !== '(default)') {
+      // Try named database first
+      try {
+        firestoreDb = getFirestore(firebaseApp, databaseId);
+        console.log(`✅ Firestore connected to database: ${databaseId}`);
+      } catch (error) {
+        // Fallback to default database
+        console.warn(`⚠️ Named database failed, using default`);
+        firestoreDb = getFirestore(firebaseApp);
+      }
+    } else {
+      // Use default database
+      firestoreDb = getFirestore(firebaseApp);
+      console.log('✅ Firestore connected (default database)');
+    }
+  } catch (error: any) {
+    console.error('❌ Firebase initialization failed:', error.message);
+    // App continues but Firebase features are disabled
+  }
+} else {
+  const missingFields: string[] = [];
+  if (!firebaseConfig?.apiKey) missingFields.push('EXPO_PUBLIC_FIREBASE_API_KEY');
+  if (!firebaseConfig?.authDomain) missingFields.push('EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN');
+  if (!firebaseConfig?.projectId) missingFields.push('EXPO_PUBLIC_FIREBASE_PROJECT_ID');
+  if (!firebaseConfig?.appId) missingFields.push('EXPO_PUBLIC_FIREBASE_APP_ID');
+  
+  console.warn(
+    `⚠️ Firebase config invalid. Missing: ${missingFields.join(', ')}\n` +
+    'Please check your .env file.'
+  );
+}
+
+export const db = firestoreDb;
+```
+
+At minimum:
+
+- Log the active environment in dev
+- Assert required Firebase values exist
+- Avoid silent fallbacks (but gracefully degrade)
+- Support named databases with automatic fallback
+
+This prevents "it works locally but not in TestFlight" scenarios.
+
+## Sentry environment configuration
+
+Sentry should also be environment-aware:
+
+```typescript
+import * as Sentry from '@sentry/react-native';
+import Constants from 'expo-constants';
+
+Sentry.init({
+  dsn: Constants.expoConfig?.extra?.sentryDsn ?? undefined,
+  environment: Constants.expoConfig?.extra?.appEnv ?? 'development',
+  
+  // Disable expensive features in development
+  tracesSampleRate: Constants.expoConfig?.extra?.appEnv === 'development' ? 0 : 0.1,
+  debug: Constants.expoConfig?.extra?.appEnv === 'development',
+  
+  // Other Sentry config...
+});
+```
+
+This ensures errors are tagged with the correct environment and development builds don't consume quota.
+
+## Native configuration files
+
+Firebase requires platform-specific config files:
+
+- **iOS**: `GoogleService-Info.plist`
+- **Android**: `google-services.json`
+
+These should be environment-specific too. Store them in separate directories:
+
+```bash
+config/firebase/
+├── GoogleService-Info.dev.plist
+├── GoogleService-Info.staging.plist
+├── GoogleService-Info.prod.plist
+├── google-services.dev.json
+├── google-services.staging.json
+└── google-services.prod.json
+```
+
+Then reference them in your `.env.*` files:
+
+```bash
+IOS_GOOGLE_SERVICES_PLIST_PATH=./config/firebase/GoogleService-Info.dev.plist
+ANDROID_GOOGLE_SERVICES_JSON_PATH=./config/firebase/google-services.dev.json
+```
+
+## Connection testing UI
+
+A simple "connection test" screen that verifies Firebase and Sentry setup can save hours of debugging. It should:
+
+- Display the active environment clearly
+- Test Firebase by writing and reading a test document
+- Test Sentry by sending a test message
+- Show clear error messages with actionable next steps
+
+This makes it obvious when something is misconfigured, rather than failing silently later.
+
+## Common pitfalls to avoid
+
+### 1. One Firebase project, multiple environments
+
+This defeats the purpose entirely. Use separate Firebase projects.
+
+### 2. Hardcoding Firebase config
+
+If credentials appear in source control without env indirection, you've lost flexibility.
+
+### 3. Mixing EAS secrets and .env inconsistently
+
+Pick a rule and stick to it:
+
+- **public config** → `.env` files (with `EXPO_PUBLIC_` prefix)
+- **build-time secrets** → EAS secrets (for native builds)
+
+### 4. OTA updates without environment awareness
+
+An OTA pushed from staging should never affect production users. Use different EAS update channels (`dev`, `preview`, `production`) and verify the environment before publishing.
+
+### 5. Missing required Firebase fields
+
+The article shows minimal config, but you need:
+- `apiKey`
+- `authDomain`
+- `projectId`
+- `storageBucket`
+- `appId`
+
+Without all of these, Firebase features will fail in subtle ways.
+
+### 6. Debugging blind
+
+Always know:
+
+- which environment is running (log it on startup)
+- which Firebase project is connected (display it in dev mode)
+- which config file was loaded
+
+## A note on scaling this setup
+
+Once this structure exists, adding:
+
+- Sentry
+- Feature flags
+- Additional services
+- Multiple Firestore databases
+
+becomes straightforward, because the environment boundary is already well-defined.
+
+The key is consistency, not complexity.
+
+---
+
+## Want the wired-up version?
+
+I packaged this setup into a production-ready Expo starter with:
+
+- ✅ Firebase initialization and error handling (with named database support)
+- ✅ Multi-environment configuration (.env.* files)
+- ✅ EAS build profiles (development, preview, production)
+- ✅ Sentry already wired (environment-aware)
+- ✅ Connection testing UI to verify everything works
+- ✅ Native config file management
+- ✅ All the defensive patterns mentioned above
+
+If you'd rather start from a known-good baseline than rewire this each time, you can find it here:
+
+**→ [Get the production-ready Expo boilerplate on Gumroad](https://jenjacobsen.gumroad.com/l/production-ready-react-native-boilerplate)**

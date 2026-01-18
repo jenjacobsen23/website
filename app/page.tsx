@@ -7,6 +7,7 @@ import { ProjectsSection } from "@/components/projects-section"
 import { ServicesSection } from "@/components/services-section"
 import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
+import { HashScrollHandler } from "@/components/hash-scroll-handler"
 
 export const metadata: Metadata = {
   title: 'Home',
@@ -38,7 +39,8 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="flex flex-col flex-1">
+      <HashScrollHandler />
       <Navigation />
       <HeroSection />
       <AboutSection />

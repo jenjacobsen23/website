@@ -1,0 +1,451 @@
+---
+title: "Common mistakes when shipping Expo apps to production"
+summary: "Most Expo apps don't fail because of missing features. They fail because of assumptions that were fine in development but unsafe at release time. Here are the 8 most common mistakes — especially with Firebase and EAS — and how to avoid them."
+publishedAt: "2026-01-01"
+updatedAt: "2026-01-01"
+tags: ["expo", "firebase", "react-native", "production", "eas"]
+---
+
+Most Expo apps don't fail in production because of missing features. They fail because of assumptions that were fine in development but unsafe at release time.
+
+This article documents the most common mistakes I see when teams ship Expo apps to production — especially when Firebase and EAS are involved — and how to avoid them with a small amount of upfront structure.
+
+None of these issues are exotic. That's what makes them expensive.
+
+## Mistake 1: Environment misconfiguration
+
+This is the most frequent and most damaging mistake.
+
+**Typical symptoms:**
+
+- A development build writing to production Firestore
+- A staging build using production API keys
+- A TestFlight build behaving differently than local dev
+- Builds that "work" but you can't tell which backend they're pointing to
+
+**Root cause:**
+
+- Environment values are implicit rather than explicit
+- Builds rely on "whatever env happened to be loaded"
+- Missing required config fails silently instead of loudly
+
+**Fix:**
+
+Treat environments as first-class configuration, not variables you "swap later".
+
+- Separate `.env.development`, `.env.staging`, `.env.production` files
+- Explicit EAS build profiles with `APP_ENV` set per profile
+- No fallback logic if required values are missing (fail fast)
+- Environment explicitly logged on startup (display in dev mode)
+
+**Example structure:**
+
+```json
+// eas.json
+{
+  "build": {
+    "development": {
+      "channel": "dev",
+      "env": { "APP_ENV": "development" }
+    },
+    "preview": {
+      "channel": "preview",
+      "env": { "APP_ENV": "staging" }
+    },
+    "production": {
+      "channel": "production",
+      "env": { "APP_ENV": "production" }
+    }
+  }
+}
+```
+
+```typescript
+// app.config.ts - Loads .env.{APP_ENV} automatically
+const appEnv = (process.env.APP_ENV || 'development').toLowerCase();
+const envFile = `.env.${appEnv}`;
+config({ path: resolve(process.cwd(), envFile) });
+
+// Fail if required config missing
+if (!process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID) {
+  throw new Error(`Missing required config for ${appEnv}`);
+}
+```
+
+If a build can start without knowing which backend it points to, it's already unsafe.
+
+## Mistake 2: Shipping without error monitoring
+
+Expo makes it easy to ship quickly — which also makes it easy to ship blind.
+
+**Common patterns:**
+
+- Errors only logged to console (lost in production)
+- Crash reports discovered via App Store reviews (days later)
+- No way to reproduce issues in the wild
+- Monitoring configured but silently failing
+
+**Fix:**
+
+Production builds should ship with error monitoring from day one.
+
+**At minimum:**
+
+- Capture unhandled exceptions globally
+- Tag events with environment (so you know which build failed)
+- Verify monitoring works before release (test button in app)
+- Disable expensive features in development (traces, session replay)
+
+**Example:**
+
+```typescript
+import * as Sentry from '@sentry/react-native';
+import Constants from 'expo-constants';
+
+Sentry.init({
+  dsn: Constants.expoConfig?.extra?.sentryDsn ?? undefined,
+  environment: Constants.expoConfig?.extra?.appEnv ?? 'development',
+  
+  // Don't waste quota in development
+  tracesSampleRate: Constants.expoConfig?.extra?.appEnv === 'development' ? 0 : 0.1,
+  debug: Constants.expoConfig?.extra?.appEnv === 'development',
+});
+```
+
+**Verification:**
+
+Add a simple test button that sends a test message to Sentry and confirms it arrives. If you don't know what's breaking in production, you're debugging anecdotes.
+
+## Mistake 3: OTA updates without environment awareness
+
+OTA updates are powerful — and dangerous when misused.
+
+**Failure modes include:**
+
+- Staging OTA updates affecting production users (wrong channel)
+- OTA deployed without matching native version (runtimeVersion mismatch)
+- Silent behavior changes without observability (no way to verify which update is live)
+- Updates applied without environment context (dev updates in production builds)
+
+**Fix:**
+
+OTA updates must respect environment boundaries.
+
+**Rules that scale:**
+
+- Separate update channels per environment (`dev`, `preview`, `production`)
+- Never reuse channels across staging and production
+- Channel automatically embedded from EAS build profile (not manually set)
+- Verify OTA behavior in a controlled environment first (preview channel before production)
+
+**Example setup:**
+
+```json
+// eas.json - Channels are separate and explicit
+{
+  "build": {
+    "development": {
+      "channel": "dev",  // Development updates
+      "env": { "APP_ENV": "development" }
+    },
+    "preview": {
+      "channel": "preview",  // Staging updates
+      "env": { "APP_ENV": "staging" }
+    },
+    "production": {
+      "channel": "production",  // Production updates only
+      "env": { "APP_ENV": "production" }
+    }
+  }
+}
+```
+
+```typescript
+// OTA updates respect the channel from the build
+// No manual channel selection needed - it's embedded
+const update = await Updates.checkForUpdateAsync();
+if (update.isAvailable) {
+  await Updates.fetchUpdateAsync();
+  // Update applies on next restart
+}
+```
+
+**Publishing updates:**
+
+```bash
+# Development
+APP_ENV=development eas update --branch dev
+
+# Staging  
+APP_ENV=staging eas update --branch preview
+
+# Production
+APP_ENV=production eas update --branch production
+```
+
+OTA should reduce risk, not introduce it.
+
+## Mistake 4: Leaking secrets into the client
+
+It's easy to blur the line between:
+
+- Values that must exist at runtime (public config)
+- Values that should never ship to devices (secrets)
+
+**Common mistakes:**
+
+- Putting service credentials in `.env` without understanding exposure
+- Assuming "Expo hides this" (it doesn't — `EXPO_PUBLIC_` means public)
+- Mixing server and client concerns (API keys that should be server-only)
+- Using EAS secrets for runtime client values (wrong tool for the job)
+
+**Fix:**
+
+Be explicit about what runs where.
+
+**Client-safe values (required at runtime):**
+
+- Use `EXPO_PUBLIC_*` prefix
+- These ship with the app bundle
+- Assume they're visible (Firebase API keys are meant to be public)
+- Examples: `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_SENTRY_DSN`
+
+**Build-time secrets (native builds only):**
+
+- Use EAS secrets (not `.env` files)
+- Only available during build, not at runtime
+- Examples: `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, signing certificates
+
+**Server-only secrets:**
+
+- Never in the app code
+- Backend API keys, service account credentials
+- These should never touch the client
+
+**Rule of thumb:**
+
+```typescript
+// ✅ OK - Firebase config must be in client
+EXPO_PUBLIC_FIREBASE_API_KEY=...
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
+
+// ✅ OK - Sentry DSN must be in client
+EXPO_PUBLIC_SENTRY_DSN=...
+
+// ❌ Wrong - Should be EAS secret for native builds only
+SENTRY_AUTH_TOKEN=...  # Use: eas secret:create
+
+// ❌ Never - Should never be in app
+BACKEND_API_KEY=...  # This belongs on your server
+```
+
+If a value ships to a device, assume it's public.
+
+## Mistake 5: Treating build profiles as an afterthought
+
+Many teams add EAS build profiles late — once things start breaking.
+
+**Symptoms:**
+
+- Manual tweaks per build ("just set this one env var manually")
+- Inconsistent app IDs (different bundle IDs per build)
+- Builds that "work on my machine" (relying on local env state)
+- No clear separation between dev, staging, and production builds
+
+**Fix:**
+
+Define build profiles early and keep them boring.
+
+**One profile per environment:**
+
+- `development` — internal dev builds (development client)
+- `preview` — staging/internal testing (APK/IPA)
+- `production` — store builds (auto-increment version)
+
+**Predictable naming:**
+
+- Profile name can differ from environment value (e.g., `preview` profile with `APP_ENV: staging`)
+- No special cases or conditional logic in build config
+- All environment-specific values come from `.env.*` files
+
+**Example:**
+
+```json
+{
+  "build": {
+    "development": {
+      "channel": "dev",
+      "env": { "APP_ENV": "development" },
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "channel": "preview",
+      "env": { "APP_ENV": "staging" },
+      "distribution": "internal",
+      "android": { "buildType": "apk" }
+    },
+    "production": {
+      "channel": "production",
+      "env": { "APP_ENV": "production" },
+      "autoIncrement": true
+    }
+  }
+}
+```
+
+Your build system should be more stable than your application code.
+
+## Mistake 6: No way to verify integrations before release
+
+A surprising number of production issues come down to:
+
+- Firebase never initialized correctly (missing config or wrong project)
+- Sentry silently failing (DSN wrong or disabled)
+- Permissions missing on one platform (iOS vs Android inconsistency)
+- Wrong environment active (app thinks it's production but points to staging)
+
+**Fix:**
+
+Add a small, intentional verification step.
+
+**Examples:**
+
+- A hidden/dev screen that confirms Firebase connectivity (write/read test)
+- A button that sends a test error to monitoring (verify Sentry works)
+- Clear logging of active environment (display in dev mode UI)
+- Connection test UI that shows all integration status at a glance
+
+**Example verification:**
+
+```typescript
+// Simple Firebase connectivity test
+const testFirebase = async () => {
+  const testCollection = collection(db, 'connection_tests');
+  await addDoc(testCollection, { timestamp: new Date() });
+  const snapshot = await getDocs(testCollection);
+  // If this succeeds, Firebase is working
+};
+
+// Simple Sentry test
+const testSentry = () => {
+  Sentry.captureMessage('Test message', 'info');
+  // Check Sentry dashboard to verify
+};
+```
+
+**Visual verification:**
+
+Display the active environment prominently in development mode:
+
+```
+Environment: DEVELOPMENT
+Firebase Project: myapp-dev
+Sentry: Enabled
+```
+
+Five minutes of verification beats hours of post-release debugging.
+
+## Mistake 7: Firebase initialization without validation
+
+It's common to assume Firebase "just works" — until it doesn't.
+
+**Failure modes:**
+
+- Missing required config fields (silent failure)
+- Wrong Firebase project ID (points to wrong backend)
+- Firestore API not enabled (error only appears at runtime)
+- Named database doesn't exist (fallback needed)
+
+**Fix:**
+
+Validate Firebase config before initialization, fail loudly if invalid.
+
+**At minimum:**
+
+- Check all required fields exist (`apiKey`, `authDomain`, `projectId`, `appId`, `storageBucket`)
+- Log which Firebase project is active (make it obvious in dev)
+- Handle missing Firestore gracefully (app continues but Firebase features disabled)
+- Support named databases with automatic fallback to default
+
+**Example:**
+
+```typescript
+function isValidFirebaseConfig(config: any): config is {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  appId: string;
+} {
+  return (
+    config &&
+    typeof config.apiKey === 'string' &&
+    config.apiKey.length > 0 &&
+    // ... validate all required fields
+  );
+}
+
+if (isValidFirebaseConfig(firebaseConfig)) {
+  firebaseApp = initializeApp(firebaseConfig);
+  console.log(`✅ Firebase initialized: ${firebaseConfig.projectId}`);
+} else {
+  console.warn('⚠️ Firebase config invalid. Missing required fields.');
+  // App continues but Firebase features are disabled
+}
+```
+
+## Mistake 8: Optimizing too late — or too early
+
+Two extremes cause problems:
+
+- Shipping with no structure because "it's just v1" (technical debt accumulates)
+- Over-engineering before anything is validated (complexity without benefit)
+
+**Fix:**
+
+Optimize for known failure points, not hypothetical scale.
+
+**Production essentials (do these early):**
+
+- Environment separation (prevents data leaks)
+- Error monitoring (prevents blind shipping)
+- Build profiles (prevents manual errors)
+- Integration verification (prevents broken releases)
+
+**Premature optimization (skip until needed):**
+
+- Complex feature flag systems
+- Multi-region deployments
+- Advanced caching strategies
+- Microservices architecture
+
+Environment separation, monitoring, and builds are not premature. They're table stakes for production.
+
+## A simple rule of thumb
+
+If you can't answer these questions instantly, something is missing:
+
+1. **Which environment is this build running?** (Should be visible in app/config)
+2. **Which backend is it connected to?** (Firebase project ID should be logged)
+3. **Where do errors go?** (Sentry dashboard link, test button in app)
+4. **How would I know if this broke for users?** (Error monitoring + alerts)
+
+Production readiness is mostly about clarity, not complexity.
+
+## This is already wired correctly
+
+All of the safeguards described above are already implemented in my production-ready Expo starter:
+
+- ✅ Multi-environment configuration (`.env.*` files with explicit loading)
+- ✅ Firebase initialization with validation (defensive, fails loudly if misconfigured)
+- ✅ Sentry wired with environment awareness (disabled in dev, tagged correctly)
+- ✅ EAS build profiles set up cleanly (`development`, `preview`, `production`)
+- ✅ OTA update channels separated by environment (`dev`, `preview`, `production`)
+- ✅ Simple UI to verify integrations before release (Firebase + Sentry test buttons)
+- ✅ Environment display in dev mode (makes active config obvious)
+- ✅ Clear separation of public config vs secrets (`EXPO_PUBLIC_` vs EAS secrets)
+
+If you want the checklist implemented rather than re-created, you can find it here:
+
+**→ [Get the production-ready Expo boilerplate on Gumroad](https://jenjacobsen.gumroad.com/l/production-ready-react-native-boilerplate)**

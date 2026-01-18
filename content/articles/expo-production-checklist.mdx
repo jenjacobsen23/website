@@ -1,0 +1,146 @@
+---
+title: "A production-ready checklist for React Native (Expo) apps"
+summary: "Most teams don't ship broken apps because they missed a feature. They ship broken apps because the basics weren't ready. This checklist captures the minimum bar for production readiness in an Expo app — especially when Firebase and EAS are involved."
+publishedAt: "2026-01-01"
+updatedAt: "2026-01-01"
+tags: ["expo", "firebase", "react-native", "production", "eas", "checklist"]
+---
+
+Most teams don't ship broken apps because they missed a feature.
+They ship broken apps because the basics weren't ready.
+
+This checklist captures the minimum bar for production readiness in an Expo app — especially when Firebase and EAS are involved. It's intentionally boring, because boring is what scales.
+
+If you run this list before every release, you'll avoid the majority of expensive post-launch issues.
+
+## 1. Environment separation
+
+Production starts with clarity.
+
+**Checklist**
+
+- Dev, staging, and prod each use a separate backend
+- `.env.development`, `.env.staging`, `.env.production` exist and are complete
+- No fallback env values — builds fail if required vars are missing
+- EAS build profiles explicitly map to environments
+- Active environment is visible in the app (log or UI)
+
+**Why it matters**
+
+If you can't tell which backend a build is using, you're not in control of the release.
+
+## 2. Error monitoring & observability
+
+You cannot fix what you cannot see.
+
+**Checklist**
+
+- Error monitoring is enabled in all environments
+- Environment tag is attached to every event
+- A test error is sent and visible before release
+- Performance monitoring is enabled (if used)
+
+**Why it matters**
+
+App Store reviews are not a monitoring strategy.
+
+## 3. Build & release safety
+
+Your build system should be more stable than your app.
+
+**Checklist**
+
+- One EAS build profile per environment
+- Bundle identifiers / app IDs are correct
+- OTA channels are isolated per environment
+- OTA updates tested in staging before production
+- Native version and OTA compatibility verified
+
+**Why it matters**
+
+Most "mystery bugs" are build pipeline mistakes.
+
+## 4. Secrets & security
+
+Assume anything on a device is public.
+
+**Checklist**
+
+- Client-safe values use `EXPO_PUBLIC_*`
+- Secrets live in EAS or backend infrastructure
+- No credentials committed to git history
+- Firebase rules match the environment
+- API keys are scoped and restricted
+
+**Why it matters**
+
+Security failures are almost always configuration failures.
+
+## 5. Integration verification
+
+Never trust configuration without proof.
+
+**Checklist**
+
+- Firebase initializes successfully in the release build
+- Firestore reads/writes work in the target environment
+- Push notifications deliver (if used)
+- Permissions behave correctly on iOS and Android
+- A fresh install works (no cached state assumptions)
+
+**Why it matters**
+
+Most production bugs are integration failures, not logic errors.
+
+## 6. CI/CD hygiene
+
+Shipping should be boring.
+
+**Checklist**
+
+- Builds are reproducible
+- CI validates env configuration
+- Secrets are not stored in the repo
+- Build logs clearly show the active environment
+
+**Why it matters**
+
+Manual build steps don't scale past one developer.
+
+## 7. Final pre-release sanity check
+
+Run this before every release:
+
+- Which environment is this build running?
+- Which backend is it connected to?
+- Where do errors go?
+- How would I know if this broke for users?
+
+If you can't answer all four instantly, stop the release.
+
+## Production readiness is mostly clarity
+
+"Production-ready" is not about architecture diagrams or microservices.
+It's about knowing, with certainty:
+
+- what environment you're running
+- what backend you're using
+- how failures are observed
+- how builds are produced
+
+Everything else is secondary.
+
+## Want this implemented, not just written?
+
+All of the above is already wired into my production-ready Expo starter:
+
+- Multi-environment configuration
+- Firebase initialization with validation
+- Sentry error monitoring
+- EAS build profiles
+- OTA channel isolation
+- A simple UI to verify integrations
+
+If you want to start from a known-good baseline instead of rebuilding this checklist each time:
+
+**→ [Get the production-ready Expo boilerplate on Gumroad](https://jenjacobsen.gumroad.com/l/production-ready-react-native-boilerplate)**
