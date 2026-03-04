@@ -72,6 +72,13 @@ export function Navigation() {
                   Projects
                 </Link>
                 <Link
+                  href="/#demos"
+                  onClick={(e) => handleSectionClick(e, 'demos')}
+                  className="text-foreground hover:text-primary transition-colors cursor-pointer"
+                >
+                  Demos
+                </Link>
+                <Link
                   href="/#services"
                   onClick={(e) => handleSectionClick(e, 'services')}
                   className="text-foreground hover:text-primary transition-colors cursor-pointer"
@@ -122,7 +129,14 @@ export function Navigation() {
                 onClick={(e) => handleSectionClick(e, 'projects')}
                 className="block px-3 py-2 text-foreground hover:text-primary transition-colors w-full text-left cursor-pointer"
               >
-                Projects
+                Experience
+              </Link>
+              <Link
+                href="/#demos"
+                onClick={(e) => handleSectionClick(e, 'demos')}
+                className="block px-3 py-2 text-foreground hover:text-primary transition-colors w-full text-left cursor-pointer"
+              >
+                Demos
               </Link>
               <Link
                 href="/#services"

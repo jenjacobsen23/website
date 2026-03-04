@@ -209,7 +209,7 @@ export function ContactSection() {
                 <ul className="text-sm text-muted-foreground space-y-2">
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
-                    8+ years of proven experience
+                    9+ years of proven experience
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
