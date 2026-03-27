@@ -65,16 +65,16 @@ export function ServiceWebsites() {
             <p className="mt-5 text-lg text-muted-foreground">
               Whether you need a new website or your current one isn&apos;t pulling its weight, your site should perform — loading fast, guiding visitors to action, and representing your business properly.
             </p>
-            <p className="mt-3 flex gap-4 text-sm">
+            <p className="mt-3 flex flex-col gap-2 text-sm sm:flex-row sm:gap-4">
               <Link
                 href={contactWithProject("new-website")}
-                className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                className="font-medium text-primary underline underline-offset-4 hover:text-primary/90"
               >
                 Need a new website
               </Link>
               <Link
                 href={contactWithProject("website-refresh")}
-                className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                className="font-medium text-primary underline underline-offset-4 hover:text-primary/90"
               >
                 Improve an existing site
               </Link>
@@ -103,12 +103,9 @@ export function ServiceWebsites() {
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              <Link 
-                href="/services/websites" 
-                className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-              >
-                Learn more
-              </Link>
+              <Button asChild variant="outline" size="lg" className="shadow-sm">
+                <Link href="/services/websites">Learn more</Link>
+              </Button>
             </div>
             
             {/* Local Business Promo Callout */}

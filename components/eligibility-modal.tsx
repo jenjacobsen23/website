@@ -119,12 +119,12 @@ export function EligibilityModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size={buttonSize} className={cn("gap-2", className)}>
+        <Button size={buttonSize} className={cn("cursor-pointer gap-2", className)}>
           {buttonText}
           <ArrowRight className="size-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg [&_[data-slot=dialog-close]]:cursor-pointer">
         {/* Step 1: Postcode Check */}
         {state === "postcode" && (
           <>
@@ -156,7 +156,7 @@ export function EligibilityModal({
                 </FieldDescription>
               </Field>
 
-              <Button type="submit" className="mt-6 w-full gap-2">
+              <Button type="submit" className="mt-6 w-full cursor-pointer gap-2">
                 Check Eligibility
                 <ArrowRight className="size-4" />
               </Button>
@@ -191,25 +191,41 @@ export function EligibilityModal({
                     className="mt-2"
                   >
                     <div className="flex items-center gap-3">
-                      <RadioGroupItem value="new-website" id="new-website" />
+                      <RadioGroupItem
+                        value="new-website"
+                        id="new-website"
+                        className="cursor-pointer"
+                      />
                       <label htmlFor="new-website" className="text-sm text-foreground cursor-pointer">
                         New Website
                       </label>
                     </div>
                     <div className="flex items-center gap-3">
-                      <RadioGroupItem value="website-refresh" id="website-refresh" />
+                      <RadioGroupItem
+                        value="website-refresh"
+                        id="website-refresh"
+                        className="cursor-pointer"
+                      />
                       <label htmlFor="website-refresh" className="text-sm text-foreground cursor-pointer">
                         Website Refresh
                       </label>
                     </div>
                     <div className="flex items-center gap-3">
-                      <RadioGroupItem value="booking-setup" id="booking-setup" />
+                      <RadioGroupItem
+                        value="booking-setup"
+                        id="booking-setup"
+                        className="cursor-pointer"
+                      />
                       <label htmlFor="booking-setup" className="text-sm text-foreground cursor-pointer">
                         Online Booking Setup
                       </label>
                     </div>
                     <div className="flex items-center gap-3">
-                      <RadioGroupItem value="not-sure" id="not-sure" />
+                      <RadioGroupItem
+                        value="not-sure"
+                        id="not-sure"
+                        className="cursor-pointer"
+                      />
                       <label htmlFor="not-sure" className="text-sm text-foreground cursor-pointer">
                         Not sure
                       </label>
@@ -229,13 +245,21 @@ export function EligibilityModal({
                     className="mt-2"
                   >
                     <div className="flex items-center gap-3">
-                      <RadioGroupItem value="yes" id="has-website-yes" />
+                      <RadioGroupItem
+                        value="yes"
+                        id="has-website-yes"
+                        className="cursor-pointer"
+                      />
                       <label htmlFor="has-website-yes" className="text-sm text-foreground cursor-pointer">
                         Yes
                       </label>
                     </div>
                     <div className="flex items-center gap-3">
-                      <RadioGroupItem value="no" id="has-website-no" />
+                      <RadioGroupItem
+                        value="no"
+                        id="has-website-no"
+                        className="cursor-pointer"
+                      />
                       <label htmlFor="has-website-no" className="text-sm text-foreground cursor-pointer">
                         No
                       </label>
@@ -343,7 +367,7 @@ export function EligibilityModal({
 
                 <Button
                   type="submit"
-                  className="mt-2 w-full gap-2"
+                  className="mt-2 w-full cursor-pointer gap-2"
                   disabled={submitting}
                 >
                   {submitting ? (
@@ -376,7 +400,7 @@ export function EligibilityModal({
             
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full cursor-pointer"
                 onClick={() => setOpen(false)}
               >
                 Close
@@ -395,13 +419,13 @@ export function EligibilityModal({
               </DialogDescription>
             </DialogHeader>
             <div className="mt-6 flex flex-col gap-3">
-              <Button asChild className="w-full gap-2">
+              <Button asChild className="w-full cursor-pointer gap-2">
                 <Link href="/#services">
                   View Standard Services
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="w-full">
+              <Button asChild variant="outline" className="w-full cursor-pointer">
                 <Link href="/?project=website-refresh#contact">
                   Contact Me Anyway
                 </Link>

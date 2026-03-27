@@ -376,7 +376,7 @@ export default function LocalBusinessRefreshPage() {
                 <span className="text-xs text-muted-foreground">
                   Currently focused on Melbourne-based businesses
                 </span>
-                <Link href="/#services" className="mt-2 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+                <Link href="/#services" className="mt-2 text-sm text-primary underline underline-offset-4 hover:text-primary/90">
                   Or start a new website or booking setup
                 </Link>
               </div>

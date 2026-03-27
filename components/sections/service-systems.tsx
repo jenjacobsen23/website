@@ -163,12 +163,9 @@ export function ServiceSystems() {
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              <Link 
-                href="/services/apps" 
-                className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-              >
-                Learn more
-              </Link>
+              <Button asChild variant="outline" size="lg" className="shadow-sm">
+                <Link href="/services/apps">Learn more</Link>
+              </Button>
             </div>
           </div>
         </div>

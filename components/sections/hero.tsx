@@ -113,7 +113,7 @@ function ArchitectureDiagram() {
         <div className="h-1.5 w-12 rounded bg-muted-foreground/20" />
       </div>
       
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg border border-border bg-card px-4 py-2 shadow-md">
+      <div className="absolute left-1/2 -translate-x-1/2 rounded-lg border border-border bg-card px-4 py-2 shadow-md lg:bottom-4">
         <div className="mb-1 h-2 w-14 rounded bg-foreground" />
         <div className="h-1.5 w-18 rounded bg-muted" />
       </div>
