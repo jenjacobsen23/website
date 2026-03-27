@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, type FormEvent } from "react"
+import { Suspense, useState, useEffect, type FormEvent } from "react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -21,7 +21,7 @@ const projectTypes = [
   { value: "other", label: "Other" },
 ]
 
-export function Contact() {
+function ContactInner() {
   const searchParams = useSearchParams()
   const [projectType, setProjectType] = useState("")
   const [pending, setPending] = useState(false)
@@ -179,5 +179,29 @@ export function Contact() {
         </div>
       </div>
     </section>
+  )
+}
+
+function ContactFallback() {
+  return (
+    <section id="contact" className="py-20 md:py-28">
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="mx-auto max-w-lg space-y-5">
+          <div className="mb-8 space-y-3 text-center">
+            <div className="mx-auto h-9 max-w-md animate-pulse rounded-md bg-muted" />
+            <div className="mx-auto h-5 max-w-sm animate-pulse rounded-md bg-muted" />
+          </div>
+          <div className="h-64 animate-pulse rounded-lg bg-muted" />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export function Contact() {
+  return (
+    <Suspense fallback={<ContactFallback />}>
+      <ContactInner />
+    </Suspense>
   )
 }

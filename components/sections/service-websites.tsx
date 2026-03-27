@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { contactWithProject } from "@/lib/contact-href"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 
@@ -65,10 +66,16 @@ export function ServiceWebsites() {
               Whether you need a new website or your current one isn&apos;t pulling its weight, your site should perform — loading fast, guiding visitors to action, and representing your business properly.
             </p>
             <p className="mt-3 flex gap-4 text-sm">
-              <Link href="#contact" className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+              <Link
+                href={contactWithProject("new-website")}
+                className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
                 Need a new website
               </Link>
-              <Link href="#contact" className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+              <Link
+                href={contactWithProject("website-refresh")}
+                className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
                 Improve an existing site
               </Link>
             </p>
@@ -91,7 +98,7 @@ export function ServiceWebsites() {
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Button asChild size="lg" className="gap-2 shadow-md">
-                <Link href="#contact">
+                <Link href={contactWithProject("website-refresh")}>
                   Fix My Website
                   <ArrowRight className="size-4" />
                 </Link>

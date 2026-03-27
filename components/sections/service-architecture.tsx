@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { contactWithProject } from "@/lib/contact-href"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 
@@ -110,7 +111,7 @@ export function ServiceArchitecture() {
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Button asChild size="lg" className="gap-2 shadow-md">
-                <Link href="#contact">
+                <Link href={contactWithProject("architecture")}>
                   Get Architecture Guidance
                   <ArrowRight className="size-4" />
                 </Link>

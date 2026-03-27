@@ -1,6 +1,7 @@
 import { Header } from "@/components/sections/header"
 import { Footer } from "@/components/sections/footer"
 import { Button } from "@/components/ui/button"
+import { contactWithProject } from "@/lib/contact-href"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ArrowRight, CheckCircle2, Smartphone, Database, Cloud, Layout } from "lucide-react"
 import Link from "next/link"
@@ -188,7 +189,7 @@ export default function AppsServicePage() {
                 Let&apos;s discuss your project and see how I can help you achieve your goals.
               </p>
               <Button asChild size="lg" className="mt-8 gap-2">
-                <Link href="/#contact">
+                <Link href={contactWithProject("web-app")}>
                   Start a Software Project
                   <ArrowRight className="size-4" />
                 </Link>

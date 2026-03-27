@@ -1,6 +1,7 @@
 import { Header } from "@/components/sections/header"
 import { Footer } from "@/components/sections/footer"
 import { Button } from "@/components/ui/button"
+import { contactWithProject } from "@/lib/contact-href"
 import { ArrowRight, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 
@@ -178,7 +179,7 @@ export default function WebsitesServicePage() {
             <h2 className="mb-6 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Technology
             </h2>
-            <p className="max-w-2xl text-lg text-muted-foreground leading-relaxed">
+            <p className="max-w-4xl text-lg text-muted-foreground leading-relaxed">
               I work with a range of technologies based on what suits your project best. From WordPress for content-heavy sites to custom React and Next.js builds for more complex requirements. The right choice depends on your goals, budget, and long-term needs.
             </p>
           </div>
@@ -218,7 +219,7 @@ export default function WebsitesServicePage() {
                 Let&apos;s discuss your project and see how I can help you achieve your goals.
               </p>
               <Button asChild size="lg" className="mt-8 gap-2">
-                <Link href="/#contact">
+                <Link href={contactWithProject("new-website")}>
                   Start a Project
                   <ArrowRight className="size-4" />
                 </Link>
