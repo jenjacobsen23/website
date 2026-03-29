@@ -4,8 +4,14 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { ArrowRight, CheckCircle2, Globe, Zap, Search, Smartphone, TrendingUp, MessageSquare } from "lucide-react"
-import Link from "next/link"
-import { EligibilityModal } from "@/components/eligibility-modal"
+import {
+  OfferModalProvider,
+  OfferModalCheckupButton,
+  OfferModalCheckupLink,
+  OfferModalServiceButton,
+} from "@/components/eligibility-modal"
+import { projectTypeToOfferMode } from "@/lib/offer-modal-modes"
+import { ScrollToSectionButton, ScrollToSectionLink } from "@/components/scroll-anchor"
 
 export const metadata = {
   title: "Melbourne Business Digital Refresh | Jen Jacobsen",
@@ -82,7 +88,7 @@ const beforeAfter = {
 const included = [
   {
     icon: Search,
-    title: "Website Build or Audit",
+    title: "New Website or Website Review",
     description: "Either a brand new site or a review of your current one to identify what needs improvement.",
   },
   {
@@ -105,18 +111,18 @@ const included = [
 const steps = [
   {
     number: "1",
-    title: "Tell me about your business",
-    description: "Share your current setup — whether you have a site, need one, or want improvements.",
+    title: "Tell me what you need (or what’s not working)",
+    description: "Whether you’re starting fresh or improving an existing site, I’ll quickly understand your setup.",
   },
   {
     number: "2",
-    title: "Review & identify improvements",
-    description: "I assess your current situation and identify the best path forward.",
+    title: "Define the right approach",
+    description: "If you know what you need, we’ll move straight into it. If not, I’ll identify the best path forward.",
   },
   {
     number: "3",
-    title: "Get a clear upgrade plan",
-    description: "You receive clear recommendations and next steps tailored to your needs.",
+    title: "Get a clear plan and next steps",
+    description: "You’ll get clear recommendations and a straightforward way to move forward.",
   },
 ]
 
@@ -130,12 +136,13 @@ const outcomes = [
 
 export default function LocalBusinessRefreshPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <OfferModalProvider>
+    <div className="min-h-screen bg-background" id="digital-checkup">
       <Header />
       <main>
         {/* Hero */}
         <section className="bg-secondary py-20 md:py-28">
-          <div className="mx-auto max-w-5xl px-6">
+          <div className="mx-auto max-w-5xl px-6" >
             <div className="mx-auto max-w-3xl text-center">
               <Badge className="mb-6 bg-primary text-primary-foreground hover:bg-primary">
                 For Melbourne Businesses
@@ -144,17 +151,25 @@ export default function LocalBusinessRefreshPage() {
                 Local Business Digital Refresh
               </h1>
               <p className="mt-6 text-pretty text-lg text-muted-foreground leading-relaxed">
-                A targeted website audit and upgrade package designed for Melbourne-based service businesses — whether you&apos;re starting from scratch or improving an existing site.
+                Start with a free digital checkup, or jump straight into the service you need — whether that&apos;s a new website, a refresh, or booking setup.
               </p>
               <p className="mt-4 text-sm text-muted-foreground">
                 Based in Australia, working closely with Melbourne businesses
               </p>
-              <div className="mt-8">
-                <EligibilityModal buttonSize="lg" />
+              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
+                <OfferModalCheckupButton buttonSize="lg" />
+                <ScrollToSectionButton
+                  targetId="start-where-you-are"
+                  size="lg"
+                  variant="outline"
+                  className="gap-2"
+                >
+                  I know what I need → View services
+                </ScrollToSectionButton>
               </div>
               <div className="mt-3 text-center">
                 <span className="text-sm text-muted-foreground">
-                  Takes 30 seconds - No commitment
+                  Free 5-minute review • No commitment • Get clear next steps
                 </span>
               </div>
             </div>
@@ -179,11 +194,14 @@ export default function LocalBusinessRefreshPage() {
         </section>
 
         {/* Start Where You Are - Packages */}
-        <section className="py-16 md:py-20">
+        <section id="start-where-you-are" className="py-16 md:py-20">
           <div className="mx-auto max-w-5xl px-6">
             <h2 className="mb-2 text-center text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Start Where You Are
             </h2>
+            <p className="mb-3 text-center text-sm text-muted-foreground leading-relaxed">
+              If you already know what you need, you can jump straight in. If not, I&apos;ll help you figure it out first with a quick digital checkup.
+            </p>
             <p className="mb-10 text-center text-sm text-muted-foreground">
               Designed for Melbourne-based businesses at any stage
             </p>
@@ -204,16 +222,22 @@ export default function LocalBusinessRefreshPage() {
                     </ul>
                   </CardHeader>
                   <CardFooter>
-                    <Button asChild variant="outline" className="w-full gap-2">
-                      <Link href={`/?project=${pkg.projectType}#contact`}>
-                        {pkg.cta}
-                        <ArrowRight className="size-4" />
-                      </Link>
-                    </Button>
+                    <OfferModalServiceButton mode={projectTypeToOfferMode(pkg.projectType)}>
+                      {pkg.cta}
+                      <ArrowRight className="size-4" />
+                    </OfferModalServiceButton>
                   </CardFooter>
                 </Card>
               ))}
             </div>
+            <p className="mt-8 text-center text-sm text-muted-foreground leading-relaxed">
+              Not sure which option is right?{" "}
+              <OfferModalCheckupLink className="text-primary underline underline-offset-4 hover:text-primary/90">
+                Start with a free digital checkup
+              </OfferModalCheckupLink>
+              {" "}
+              — I&apos;ll recommend the best path based on your business.
+            </p>
           </div>
         </section>
 
@@ -330,8 +354,8 @@ export default function LocalBusinessRefreshPage() {
           </div>
         </section>
 
-        {/* Eligibility */}
-        <section id="eligibility" className="py-16 md:py-20">
+        {/* Is this for you */}
+        <section id="is-this-for-you" className="py-16 md:py-20">
           <div className="mx-auto max-w-5xl px-6">
             <h2 className="mb-6 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Is This For You?
@@ -361,24 +385,27 @@ export default function LocalBusinessRefreshPage() {
           <div className="mx-auto max-w-5xl px-6">
             <div className="flex flex-col items-center rounded-2xl border border-border bg-card p-8 text-center md:p-12">
               <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                Ready to Refresh Your Online Presence?
+                Ready to Improve Your Online Presence?
               </h2>
               <p className="mt-4 max-w-lg text-lg text-muted-foreground">
-                Whether you need a new website, a refresh, or a booking setup — this is designed to get you moving quickly.
+                Start with a free digital checkup or jump straight into a website, refresh, or booking setup — whatever fits where you&apos;re at.
               </p>
               <div className="mt-8">
-                <EligibilityModal buttonSize="lg" />
+                <OfferModalCheckupButton buttonSize="lg" />
               </div>
               <div className="mt-3 flex flex-col items-center gap-2">
                 <span className="text-sm text-muted-foreground">
-                  Takes 30 seconds - No commitment
+                  Free 5-minute review • No commitment • Get clear next steps
                 </span>
                 <span className="text-xs text-muted-foreground">
                   Currently focused on Melbourne-based businesses
                 </span>
-                <Link href="/#services" className="mt-2 text-sm text-primary underline underline-offset-4 hover:text-primary/90">
+                <ScrollToSectionLink
+                  targetId="start-where-you-are"
+                  className="mt-2 text-sm text-primary underline underline-offset-4 hover:text-primary/90"
+                >
                   Or start a new website or booking setup
-                </Link>
+                </ScrollToSectionLink>
               </div>
             </div>
           </div>
@@ -386,5 +413,6 @@ export default function LocalBusinessRefreshPage() {
       </main>
       <Footer />
     </div>
+    </OfferModalProvider>
   )
 }

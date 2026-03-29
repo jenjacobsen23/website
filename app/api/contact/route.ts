@@ -21,8 +21,16 @@ const contactPayload = z.object({
   message: z.string().min(1).max(10000),
 })
 
+const offerModalEntryMode = z.enum([
+  "checkup",
+  "new-website",
+  "website-refresh",
+  "booking-setup",
+])
+
 const eligibilityPayload = z.object({
   source: z.literal("eligibility"),
+  entryMode: offerModalEntryMode.optional(),
   postcode: z.string().min(1).max(10),
   serviceType: z.string().min(1).max(50),
   hasWebsite: z.enum(["yes", "no"]),
@@ -96,8 +104,13 @@ export async function POST(request: Request) {
     const phone = data.phone
       ? `<p><strong>Phone:</strong> ${escapeHtml(data.phone)}</p>`
       : ""
+    const entry =
+      data.entryMode != null
+        ? `<p><strong>Entry:</strong> ${escapeHtml(data.entryMode)}</p>`
+        : ""
     html = `
       <p><strong>Source:</strong> Eligibility modal (Melbourne offer)</p>
+      ${entry}
       <p><strong>Postcode:</strong> ${escapeHtml(data.postcode)}</p>
       <p><strong>Service interest:</strong> ${escapeHtml(data.serviceType)}</p>
       <p><strong>Has website:</strong> ${escapeHtml(data.hasWebsite)}</p>
