@@ -1,6 +1,5 @@
 import { Header } from "@/components/sections/header"
 import { Footer } from "@/components/sections/footer"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { ArrowRight, CheckCircle2, Globe, Zap, Search, Smartphone, TrendingUp, MessageSquare } from "lucide-react"
@@ -15,7 +14,8 @@ import { ScrollToSectionButton, ScrollToSectionLink } from "@/components/scroll-
 
 export const metadata = {
   title: "Melbourne Business Digital Refresh | Jen Jacobsen",
-  description: "A targeted website audit and upgrade package designed for Melbourne-based service businesses — whether you're starting from scratch or improving an existing site.",
+  description:
+    "Free digital checkup for Melbourne service businesses — clear next steps for a new website, refresh, or booking setup.",
 }
 
 const designedToImprove = [
@@ -28,7 +28,7 @@ const designedToImprove = [
 const packages = [
   {
     title: "New Website",
-    description: "You don't have a site yet and want to launch properly from day one.",
+    description: "You don't have a website yet and want to launch properly from day one.",
     bullets: [
       "Built for clarity and conversions",
       "Fast, modern, mobile-first",
@@ -39,7 +39,7 @@ const packages = [
   },
   {
     title: "Website Refresh",
-    description: "You already have a site, but it's underperforming or outdated.",
+    description: "You already have a site, but it's outdated, underperforming, or unclear.",
     bullets: [
       "Improve messaging and structure",
       "Increase conversions from existing traffic",
@@ -62,11 +62,11 @@ const packages = [
 ]
 
 const problems = [
-  "You don't have a website yet and aren't sure where to start",
-  "Your current site feels outdated or unclear",
-  "Customers can't easily contact or book with you",
   "You're not getting enquiries from your online presence",
   "People find you, but don't take action",
+  "Customers can't easily contact or book with you",
+  "Your current site feels outdated or unclear",
+  "You don't have a website yet and aren't sure where to start",
   "You rely on word of mouth but aren't showing up properly online",
 ]
 
@@ -151,13 +151,18 @@ export default function LocalBusinessRefreshPage() {
                 Local Business Digital Refresh
               </h1>
               <p className="mt-6 text-pretty text-lg text-muted-foreground leading-relaxed">
-                Start with a free digital checkup, or jump straight into the service you need — whether that&apos;s a new website, a refresh, or booking setup.
+              Get clear on what’s holding your business back online — and the fastest way to fix it. Start with a free digital checkup.
               </p>
               <p className="mt-4 text-sm text-muted-foreground">
+                9+ years building web and mobile applications
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
                 Based in Australia, working closely with Melbourne businesses
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
-                <OfferModalCheckupButton buttonSize="lg" />
+                <div className="flex flex-col items-center gap-2">
+                  <OfferModalCheckupButton buttonSize="lg" />                  
+                </div>
                 <ScrollToSectionButton
                   targetId="start-where-you-are"
                   size="lg"
@@ -166,6 +171,9 @@ export default function LocalBusinessRefreshPage() {
                 >
                   I know what I need → View services
                 </ScrollToSectionButton>
+                <span className="max-w-[25rem] text-center text-xs text-muted-foreground">
+                    Limited spots available this month for Melbourne businesses
+                  </span>
               </div>
               <div className="mt-3 text-center">
                 <span className="text-sm text-muted-foreground">
@@ -200,7 +208,7 @@ export default function LocalBusinessRefreshPage() {
               Start Where You Are
             </h2>
             <p className="mb-3 text-center text-sm text-muted-foreground leading-relaxed">
-              If you already know what you need, you can jump straight in. If not, I&apos;ll help you figure it out first with a quick digital checkup.
+              Know what you need? Jump straight in. Not sure? I&apos;ll help you decide with a quick digital checkup.
             </p>
             <p className="mb-10 text-center text-sm text-muted-foreground">
               Designed for Melbourne-based businesses at any stage
@@ -264,7 +272,7 @@ export default function LocalBusinessRefreshPage() {
               What Changes After This
             </h2>
             <p className="mb-10 text-center text-muted-foreground">
-              Whether you&apos;re starting fresh or improving what you have, here&apos;s the difference this makes.
+              Starting fresh or improving what you have — here&apos;s the shift you can expect.
             </p>
             <div className="grid gap-8 md:grid-cols-2">
               {/* Before */}
@@ -361,7 +369,7 @@ export default function LocalBusinessRefreshPage() {
               Is This For You?
             </h2>
             <p className="mb-6 text-lg text-muted-foreground">
-              This offer is designed for local businesses that meet the following criteria:
+              This is a fit if:
             </p>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
@@ -385,10 +393,10 @@ export default function LocalBusinessRefreshPage() {
           <div className="mx-auto max-w-5xl px-6">
             <div className="flex flex-col items-center rounded-2xl border border-border bg-card p-8 text-center md:p-12">
               <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                Ready to Improve Your Online Presence?
+                Ready to Get More Customers Online?
               </h2>
               <p className="mt-4 max-w-lg text-lg text-muted-foreground">
-                Start with a free digital checkup or jump straight into a website, refresh, or booking setup — whatever fits where you&apos;re at.
+                Book a free digital checkup or choose a website, refresh, or booking setup — whatever matches where you&apos;re at.
               </p>
               <div className="mt-8">
                 <OfferModalCheckupButton buttonSize="lg" />
