@@ -74,7 +74,7 @@ export function Header() {
           <Link href="/#services" className={navLinkClass}>
             Services
           </Link>
-          <Link href="/work" className={navLinkClass}>
+          <Link href="/#work" className={navLinkClass}>
             Work
           </Link>
           <Link href="/#about" className={navLinkClass}>

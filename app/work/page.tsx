@@ -56,7 +56,7 @@ export default function WorkPage() {
             <div className="section-rule" />
           </div>
 
-          <div className="project-card">
+          <div id="flip-it" className="project-card scroll-mt-24 md:scroll-mt-28">
             <div className="project-card-inner">
               <div className="project-info">
                 <div>
@@ -149,7 +149,7 @@ export default function WorkPage() {
             </div>
           </div>
 
-          <div className="restricted-card">
+          <div id="smart" className="restricted-card scroll-mt-24 md:scroll-mt-28">
             <div className="restricted-card-inner">
               <div className="restricted-info">
                 <div>
@@ -307,7 +307,7 @@ export default function WorkPage() {
               </div>
             </div>
 
-            <div className="personal-card">
+            <div id="one-two" className="personal-card scroll-mt-24 md:scroll-mt-28">
               <div className="personal-card-preview">
                 <div className="personal-card-preview-placeholder">
                   <span className="preview-label">one two</span>
