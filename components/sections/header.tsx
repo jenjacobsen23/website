@@ -44,8 +44,8 @@ export function Header() {
       className={cn(
         "sticky top-0 z-50 border-b border-white/10 shadow-sm transition-[background-color,backdrop-filter,border-color] duration-300 ease-out",
         scrolled
-          ? "border-white/5 bg-[#2d343e]/60 backdrop-blur-lg"
-          : "bg-[#2d343e]"
+          ? "border-white/5 bg-[#2a3441]/60 backdrop-blur-lg"
+          : "bg-[#2a3441]"
       )}
     >
       <div className="mx-auto flex min-h-[3.5rem] max-w-6xl items-center justify-between gap-3 px-4 py-2 md:min-h-[4.25rem] md:gap-4 md:px-6">
@@ -73,6 +73,9 @@ export function Header() {
         <nav className="hidden items-center gap-8 md:flex">
           <Link href="/#services" className={navLinkClass}>
             Services
+          </Link>
+          <Link href="/work" className={navLinkClass}>
+            Work
           </Link>
           <Link href="/#about" className={navLinkClass}>
             About
@@ -112,6 +115,11 @@ export function Header() {
                 <SheetClose asChild>
                   <Link href="/#services" className={mobileNavLinkClass}>
                     Services
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link href="/work" className={mobileNavLinkClass}>
+                    Work
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
