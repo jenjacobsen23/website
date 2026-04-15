@@ -26,10 +26,10 @@ export const workPreviewProjects: WorkPreviewProject[] = [
   },
   {
     id: "one-two",
-    category: "Personal · Product · Sports Platform",
+    category: "Personal · Pre-Launch Website",
     client: "Solo — Design & Build",
     title: "one two",
     excerpt:
-      "Women's sports in one place — aggregating coverage so fans don't have to chase it across channels.",
+      "Pre-launch promotional site for a women's sports platform currently in development. Built to grow an early audience ahead of the app release.",
   },
 ]

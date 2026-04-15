@@ -154,8 +154,6 @@
   }
 
   /* Light card panels: fixed palette so cards stay unchanged on dark page */
-  .project-card,
-  .restricted-card,
   .personal-card,
   .demo-card {
     --foreground: #2a3441;
@@ -286,30 +284,18 @@
     );
   }
 
-  /* ===================== COMMERCIAL PROJECT CARD ===================== */
-  .project-card {
-    background: #ffffff;
-    border-radius: var(--radius-xl, 0.75rem);
-    overflow: hidden;
-    margin-bottom: 32px;
-    border: 1px solid #e8ebf0;
-    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
-    position: relative;
-  }
-
-  .project-card-inner {
+  /* Commercial — flip* it + S.M.A.R.T: two columns on desktop, stack on tablet/mobile */
+  .commercial-grid {
     display: grid;
-    grid-template-columns: 1fr 380px;
-    min-height: 480px;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+  .commercial-grid > .personal-card {
+    min-width: 0;
   }
 
-  .project-info {
-    padding: 52px 48px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
+  /* ===================== COMMERCIAL PROJECT (copy + meta) ===================== */
   .project-meta {
     display: flex;
     align-items: center;
@@ -432,32 +418,6 @@
     border: 1px solid var(--border);
   }
 
-  /* Mockup panel */
-  .project-mockup {
-    background: var(--dark-2);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 24px;
-    overflow: hidden;
-  }
-  .mockup-bg-pattern {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(rgba(78, 205, 196, 0.06) 1px, #2a3441 1px);
-    background-size: 20px 20px;
-  }
-  .mockup-placeholder {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-
   /* Browser mockup */
   .browser-frame {
     width: 100%;
@@ -556,27 +516,7 @@
     object-fit: cover;
   }
 
-  /* ===================== RESTRICTED CARD — light info, dark panel ===================== */
-  .restricted-card {
-    border-radius: var(--radius-xl, 0.75rem);
-    overflow: hidden;
-    margin-bottom: 32px;
-    background: #ffffff;
-    border: 1px solid #e8ebf0;
-    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
-    position: relative;
-  }
-  .restricted-card-inner {
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    min-height: 480px;
-  }
-  .restricted-info {
-    padding: 52px 48px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
+  /* ===================== RESTRICTED PANEL (preview strip + copy) ===================== */
   .restricted-title {
     font-family: var(--font-dm-serif), serif;
     font-size: clamp(26px, 2.5vw, 36px);
@@ -632,15 +572,15 @@
     border: 1px solid var(--border);
   }
 
-  /* Restricted panel */
-  .restricted-panel {
+  /* Restricted panel — fills personal-card-preview (16:9) */
+  .personal-card-preview .restricted-panel {
+    position: absolute;
+    inset: 0;
     background: var(--surface-header);
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     overflow: hidden;
-    border-left: 1px solid rgba(255,255,255,0.04);
   }
   .restricted-grid {
     position: absolute;
@@ -659,6 +599,13 @@
     gap: 20px;
     text-align: center;
     padding: 32px;
+  }
+  .restricted-stamp-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
   }
   .stamp-icon {
     width: 56px;
@@ -724,6 +671,9 @@
     background: var(--dark-3);
     position: relative;
     overflow: hidden;
+  }
+  .personal-card-preview picture {
+    display: block;
   }
   .personal-card-preview img {
     width: 100%;
@@ -992,13 +942,8 @@
 
   /* RESPONSIVE */
   @media (max-width: 900px) {
-    .project-card-inner,
-    .restricted-card-inner {
+    .commercial-grid {
       grid-template-columns: 1fr;
-    }
-    .project-mockup,
-    .restricted-panel {
-      min-height: 260px;
     }
     .phone-frame { display: none; }
     .personal-grid { grid-template-columns: 1fr 1fr; }
@@ -1010,8 +955,6 @@
       padding: 60px 20px 40px;
     }
     .section { padding: 56px 20px; }
-    .project-info { padding: 32px 24px; }
-    .restricted-info { padding: 32px 24px; }
     .personal-grid { grid-template-columns: 1fr; }
     .demo-grid { grid-template-columns: 1fr; }
     .hero-stats {
