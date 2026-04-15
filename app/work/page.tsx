@@ -468,7 +468,7 @@ export default function WorkPage() {
                 size="lg"
                 className="text-foreground shadow-[0_1px_2px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.4)]"
               >
-                <Link href="/#services">
+                <Link href="/services">
                   Explore Services
                 </Link>
               </Button>
