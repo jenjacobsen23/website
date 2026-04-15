@@ -21,7 +21,7 @@ const projectTypes = [
   { value: "other", label: "Other" },
 ]
 
-function ContactInner() {
+function ContactInner({ showIntro = true }: { showIntro?: boolean }) {
   const searchParams = useSearchParams()
   const [projectType, setProjectType] = useState("")
   const [pending, setPending] = useState(false)
@@ -87,14 +87,16 @@ function ContactInner() {
     <section id="contact" className="py-20 md:py-28">
       <div className="mx-auto max-w-5xl px-6">
         <div className="mx-auto max-w-lg">
-          <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Let&apos;s Build Something That Actually Works
-            </h2>
-            <p className="mt-4 text-muted-foreground">
-              Tell me what you&apos;re trying to solve — I&apos;ll help you figure out the right approach.
-            </p>
-          </div>
+          {showIntro ? (
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                Let&apos;s Build Something That Actually Works
+              </h2>
+              <p className="mt-4 text-muted-foreground">
+                Tell me what you&apos;re trying to solve — I&apos;ll help you figure out the right approach.
+              </p>
+            </div>
+          ) : null}
           <form className="space-y-5" onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
@@ -182,15 +184,17 @@ function ContactInner() {
   )
 }
 
-function ContactFallback() {
+function ContactFallback({ showIntro = true }: { showIntro?: boolean }) {
   return (
     <section id="contact" className="py-20 md:py-28">
       <div className="mx-auto max-w-5xl px-6">
         <div className="mx-auto max-w-lg space-y-5">
-          <div className="mb-8 space-y-3 text-center">
-            <div className="mx-auto h-9 max-w-md animate-pulse rounded-md bg-muted" />
-            <div className="mx-auto h-5 max-w-sm animate-pulse rounded-md bg-muted" />
-          </div>
+          {showIntro ? (
+            <div className="mb-8 space-y-3 text-center">
+              <div className="mx-auto h-9 max-w-md animate-pulse rounded-md bg-muted" />
+              <div className="mx-auto h-5 max-w-sm animate-pulse rounded-md bg-muted" />
+            </div>
+          ) : null}
           <div className="h-64 animate-pulse rounded-lg bg-muted" />
         </div>
       </div>
@@ -198,10 +202,10 @@ function ContactFallback() {
   )
 }
 
-export function Contact() {
+export function Contact({ showIntro = true }: { showIntro?: boolean }) {
   return (
-    <Suspense fallback={<ContactFallback />}>
-      <ContactInner />
+    <Suspense fallback={<ContactFallback showIntro={showIntro} />}>
+      <ContactInner showIntro={showIntro} />
     </Suspense>
   )
 }

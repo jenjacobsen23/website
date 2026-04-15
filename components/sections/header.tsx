@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { Menu } from "lucide-react"
 
@@ -17,16 +18,31 @@ import { cn } from "@/lib/utils"
 
 const SCROLL_THRESHOLD_PX = 16
 
-const navLinkClass =
-  "text-sm font-medium text-slate-300 transition-colors hover:text-white"
+const navLinkBase =
+  "text-sm font-medium transition-colors hover:text-white"
+
+const navLinkInactive = "text-slate-300"
+
+const navLinkActive = "text-white font-semibold"
 
 const ctaClass =
   "bg-[#00adb5] text-white shadow-sm hover:bg-[#009ca3] focus-visible:ring-offset-[#2d343e] h-7 min-h-0 gap-1.5 rounded-md px-2.5 text-xs font-semibold md:h-8 md:px-3 md:text-sm"
 
-const mobileNavLinkClass =
-  "flex min-h-12 items-center rounded-md px-3 text-base font-medium text-slate-200 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5be1e6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#2d343e]"
+const mobileNavLinkBase =
+  "flex min-h-12 items-center rounded-md px-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5be1e6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#2d343e]"
+
+const mobileNavLinkInactive = "text-slate-200"
+
+const mobileNavLinkActive =
+  "bg-white/10 text-white font-semibold"
+
+function pathMatchesNav(pathname: string, href: string) {
+  if (href === "/") return pathname === "/"
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
 
 export function Header() {
+  const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -70,17 +86,42 @@ export function Header() {
             priority
           />
         </Link>
-        <nav className="hidden items-center gap-8 md:flex">
-          <Link href="/#services" className={navLinkClass}>
+        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
+          <Link
+            href="/services"
+            className={cn(
+              navLinkBase,
+              pathMatchesNav(pathname, "/services")
+                ? navLinkActive
+                : navLinkInactive
+            )}
+            aria-current={pathMatchesNav(pathname, "/services") ? "page" : undefined}
+          >
             Services
           </Link>
-          <Link href="/#work" className={navLinkClass}>
+          <Link
+            href="/work"
+            className={cn(
+              navLinkBase,
+              pathMatchesNav(pathname, "/work") ? navLinkActive : navLinkInactive
+            )}
+            aria-current={pathMatchesNav(pathname, "/work") ? "page" : undefined}
+          >
             Work
           </Link>
-          <Link href="/#about" className={navLinkClass}>
+          {/* <Link href="/#about" className={navLinkClass}>
             About
-          </Link>
-          <Link href="/#contact" className={navLinkClass}>
+          </Link> */}
+          <Link
+            href="/contact"
+            className={cn(
+              navLinkBase,
+              pathMatchesNav(pathname, "/contact")
+                ? navLinkActive
+                : navLinkInactive
+            )}
+            aria-current={pathMatchesNav(pathname, "/contact") ? "page" : undefined}
+          >
             Contact
           </Link>
         </nav>
@@ -113,22 +154,55 @@ export function Header() {
                 aria-label="Site"
               >
                 <SheetClose asChild>
-                  <Link href="/#services" className={mobileNavLinkClass}>
+                  <Link
+                    href="/services"
+                    className={cn(
+                      mobileNavLinkBase,
+                      pathMatchesNav(pathname, "/services")
+                        ? mobileNavLinkActive
+                        : mobileNavLinkInactive
+                    )}
+                    aria-current={
+                      pathMatchesNav(pathname, "/services") ? "page" : undefined
+                    }
+                  >
                     Services
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="/work" className={mobileNavLinkClass}>
+                  <Link
+                    href="/work"
+                    className={cn(
+                      mobileNavLinkBase,
+                      pathMatchesNav(pathname, "/work")
+                        ? mobileNavLinkActive
+                        : mobileNavLinkInactive
+                    )}
+                    aria-current={
+                      pathMatchesNav(pathname, "/work") ? "page" : undefined
+                    }
+                  >
                     Work
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="/#about" className={mobileNavLinkClass}>
+                  <Link href="/#about" className={cn(mobileNavLinkBase, mobileNavLinkInactive)}>
                     About
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="/#contact" className={mobileNavLinkClass}>
+                  <Link
+                    href="/contact"
+                    className={cn(
+                      mobileNavLinkBase,
+                      pathMatchesNav(pathname, "/contact")
+                        ? mobileNavLinkActive
+                        : mobileNavLinkInactive
+                    )}
+                    aria-current={
+                      pathMatchesNav(pathname, "/contact") ? "page" : undefined
+                    }
+                  >
                     Contact
                   </Link>
                 </SheetClose>

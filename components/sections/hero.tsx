@@ -143,7 +143,7 @@ export function Hero() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="shadow-sm">
-                <Link href="#services">
+                <Link href="/services">
                   Explore Services
                 </Link>
               </Button>
