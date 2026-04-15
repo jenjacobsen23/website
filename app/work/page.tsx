@@ -2,6 +2,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { Header } from "@/components/sections/header"
 import { Footer } from "@/components/sections/footer"
+import { Button } from "@/components/ui/button"
+import { ArrowRight } from "lucide-react"
 
 export const metadata = {
   title: "Work & Projects — Jen Jacobsen",
@@ -445,12 +447,38 @@ export default function WorkPage() {
         </div>
 
         <footer className="work-cta-footer">
-          <p className="footer-text">
-            Have a project in mind? Let&apos;s talk about it.
-          </p>
-          <Link href="/#contact" className="footer-cta">
+      
+            <p className="footer-text">
+              Have a project in mind? Let&apos;s talk about it.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button
+                asChild
+                size="lg"
+                className="gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.2),0_4px_14px_rgba(0,0,0,0.45)]"
+              >
+                <Link href="/#contact">
+                  Start Your Project
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="text-foreground shadow-[0_1px_2px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.4)]"
+              >
+                <Link href="/#services">
+                  Explore Services
+                </Link>
+              </Button>
+            </div>
+          {/* <Link href="/#contact" className="footer-cta">
             Start a Project →
           </Link>
+          <Link href="/#contact" className="footer-cta">
+            Start a Project →
+          </Link> */}
         </footer>
       </main>
       <Footer />
